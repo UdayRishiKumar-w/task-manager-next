@@ -1,0 +1,72 @@
+scalar DateTime
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  tasks: [Task!]
+}
+
+type Task {
+  id: ID!
+  title: String!
+  completed: Boolean!
+  started: Boolean!
+  description: String
+  dueDate: DateTime
+  priority: Priority!
+  user: User!
+  createdAt: DateTime!
+}
+
+type Query {
+  me: User
+  getTasks: [Task!]!
+  getTask(id: ID!): Task
+}
+
+input CreateTaskInput {
+  title: String!
+  priority: Priority!
+  description: String
+  dueDate: DateTime
+  completed: Boolean
+  started: Boolean
+}
+
+input UpdateTaskInput {
+  id: ID!
+  title: String
+  completed: Boolean
+  priority: Priority
+  description: String
+  dueDate: DateTime
+  started: Boolean
+}
+
+type Mutation {
+  createTask(input: CreateTaskInput!): Task!
+  updateTask(input: UpdateTaskInput!): Task!
+  deleteTask(id: ID!): Boolean!
+  toggleTask(id: ID!): Task!
+}
+
+input TaskFilterInput {
+  completed: Boolean
+  priority: Priority
+}
+
+type TaskConnection {
+  items: [Task!]!
+  totalCount: Int!
+}
+
+extend type Query {
+  tasksPaginated(limit: Int!, offset: Int!, filter: TaskFilterInput): TaskConnection!
+}

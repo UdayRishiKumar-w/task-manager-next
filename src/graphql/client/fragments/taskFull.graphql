@@ -1,0 +1,11 @@
+fragment TaskFullFields on Task {
+  id
+  title
+  completed
+  started
+  priority
+  createdAt
+  user {
+    ...UserFields
+  }
+}

@@ -1,0 +1,6 @@
+fragment TaskMinimalFields on Task {
+  id
+  title
+  completed
+  priority
+}

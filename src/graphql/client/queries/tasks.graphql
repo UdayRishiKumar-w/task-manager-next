@@ -1,0 +1,21 @@
+query GetTasks {
+  getTasks {
+    ...TaskFullFields
+  }
+}
+
+query GetTasksWithStarted {
+  getTasks {
+    id
+    title
+    completed
+    started
+    priority
+    createdAt
+    user {
+      id
+      name
+      email
+    }
+  }
+}

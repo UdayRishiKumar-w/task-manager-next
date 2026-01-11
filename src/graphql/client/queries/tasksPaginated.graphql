@@ -1,0 +1,8 @@
+query TasksPaginated($limit: Int!, $offset: Int!, $filter: TaskFilterInput) {
+  tasksPaginated(limit: $limit, offset: $offset, filter: $filter) {
+    totalCount
+    items {
+      ...TaskFullFields
+    }
+  }
+}
