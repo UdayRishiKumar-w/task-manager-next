@@ -1,0 +1,46 @@
+{
+	"tailwindCSS.experimental.classRegex": [
+		["className\\s*:\\s*['\"]([^'\"]*)['\"]"],
+		["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+	],
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
+	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+	"html.format.indentInnerHtml": true,
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[html]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[xml]": {
+		"editor.defaultFormatter": "redhat.vscode-xml"
+	},
+	"[dockercompose]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": "explicit",
+		"source.addMissingImports.ts": "explicit"
+	},
+	"typescript.preferences.importModuleSpecifier": "non-relative",
+	"javascript.preferences.importModuleSpecifier": "non-relative",
+	"typescript.preferences.autoImportSpecifierExcludeRegexes": [
+		"^@mui/[^/]+$"
+	]
+}
