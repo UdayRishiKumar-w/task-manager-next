@@ -150,13 +150,15 @@ export const taskResolvers = {
     toggleTask: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
       if (!ctx.userId) throw new GraphQLError("Unauthorized");
 
-      const task = await Task.findOneAndUpdate(
-        { _id: id, userId: ctx.userId },
-        [{ $set: { completed: { $not: "$completed" } } }],
-        { new: true },
-      );
+      const task = await Task.findOne({
+        _id: id,
+        userId: ctx.userId,
+      });
 
       if (!task) throw new GraphQLError("Task not found");
+
+      task.completed = !task.completed;
+      await task.save();
 
       return task;
     },

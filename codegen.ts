@@ -25,6 +25,10 @@ const config: CodegenConfig = {
           DateTime: "Date",
           EmailAddress: "string",
         },
+        mappers: {
+          User: "@/models/User#UserDocument",
+          Task: "@/models/Task#TaskDocument",
+        },
       },
     },
 

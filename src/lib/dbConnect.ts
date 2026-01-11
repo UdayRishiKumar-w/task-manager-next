@@ -27,14 +27,11 @@ export async function connectDB(): Promise<typeof mongoose> {
     return cache.conn;
   }
 
-  if (!cache.promise) {
-    try {
-      const dbName = new URL(MONGODB_URI).pathname.slice(1) || "tasksdb";
-      cache.promise = connect(MONGODB_URI, { dbName });
-    } catch (error) {
-      throw new Error(`Invalid MONGODB_URI format: ${error instanceof Error ? error.message : String(error)}`);
-    }
-  }
+  cache.promise ??= connect(MONGODB_URI, {
+		dbName: new URL(MONGODB_URI).pathname.replace("/", "") || "tasksdb",
+	}).then((m) => {
+		return m;
+	});
 
   cache.conn = await cache.promise;
   return cache.conn;
