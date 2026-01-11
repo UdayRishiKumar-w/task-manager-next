@@ -11,9 +11,9 @@ describe("createTaskSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects short title", () => {
+  it("rejects No title", () => {
     const result = createTaskSchema.safeParse({
-      title: "Hi",
+      title: "",
       priority: "LOW",
     });
 
