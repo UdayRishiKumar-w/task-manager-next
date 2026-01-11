@@ -1,65 +1,47 @@
-scalar DateTime
-
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
+input CreateTaskInput {
+  completed: Boolean
+  description: String
+  dueDate: DateTime
+  priority: Priority!
+  started: Boolean
+  title: String!
 }
 
-type User {
-  id: ID!
-  name: String!
-  email: String!
-  tasks: [Task!]
+scalar DateTime
+
+type Mutation {
+  createTask(input: CreateTaskInput!): Task!
+  deleteTask(id: ID!): Boolean!
+  toggleTask(id: ID!): Task!
+  updateTask(input: UpdateTaskInput!): Task!
+}
+
+enum Priority {
+  HIGH
+  LOW
+  MEDIUM
+}
+
+type Query {
+  getTask(id: ID!): Task
+  getTasks: [Task!]!
+  me: User
+}
+
+extend type Query {
+  tasksPaginated(filter: TaskFilterInput, limit: Int!, offset: Int!): TaskConnection!
 }
 
 type Task {
   id: ID!
-  title: String!
   completed: Boolean!
-  started: Boolean!
   description: String
   dueDate: DateTime
   priority: Priority!
+  started: Boolean!
+  title: String!
   user: User!
   createdAt: DateTime!
-}
-
-type Query {
-  me: User
-  getTasks: [Task!]!
-  getTask(id: ID!): Task
-}
-
-input CreateTaskInput {
-  title: String!
-  priority: Priority!
-  description: String
-  dueDate: DateTime
-  completed: Boolean
-  started: Boolean
-}
-
-input UpdateTaskInput {
-  id: ID!
-  title: String
-  completed: Boolean
-  priority: Priority
-  description: String
-  dueDate: DateTime
-  started: Boolean
-}
-
-type Mutation {
-  createTask(input: CreateTaskInput!): Task!
-  updateTask(input: UpdateTaskInput!): Task!
-  deleteTask(id: ID!): Boolean!
-  toggleTask(id: ID!): Task!
-}
-
-input TaskFilterInput {
-  completed: Boolean
-  priority: Priority
 }
 
 type TaskConnection {
@@ -67,6 +49,24 @@ type TaskConnection {
   totalCount: Int!
 }
 
-extend type Query {
-  tasksPaginated(limit: Int!, offset: Int!, filter: TaskFilterInput): TaskConnection!
+input TaskFilterInput {
+  completed: Boolean
+  priority: Priority
+}
+
+input UpdateTaskInput {
+  id: ID!
+  completed: Boolean
+  description: String
+  dueDate: DateTime
+  priority: Priority
+  started: Boolean
+  title: String
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  tasks: [Task!]
 }

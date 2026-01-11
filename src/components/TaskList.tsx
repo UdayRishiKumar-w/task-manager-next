@@ -32,6 +32,8 @@ export default function TaskList() {
   const [toggleTask] = useMutation(ToggleTaskDocument);
   const [deleteTask] = useMutation(DeleteTaskDocument);
   const [updateTask] = useMutation(UpdateTaskDocument);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [pendingDeleteTaskId, setPendingDeleteTaskId] = useState<string | null>(null);
 
   if (loading && !data)
     return (
@@ -62,9 +64,6 @@ export default function TaskList() {
       },
     });
   };
-
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [pendingDeleteTaskId, setPendingDeleteTaskId] = useState<string | null>(null);
 
   const openDeleteDialog = (id: string) => {
     setPendingDeleteTaskId(id);

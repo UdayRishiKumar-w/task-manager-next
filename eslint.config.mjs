@@ -18,16 +18,33 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "src/server/generated/**",
     "coverage/**",
+    "src/graphql/generated/**",
   ]),
+  // https://the-guild.dev/graphql/eslint/docs/usage/graphql
   {
     files: ["**/*.graphql", "**/*.gql"],
+    languageOptions: {
+      parser: graphqlPlugin.parser,
+      parserOptions: {
+        graphQLConfig: {
+          schema: "src/graphql/schema.graphql",
+        },
+      },
+    },
+    plugins: {
+      "@graphql-eslint": graphqlPlugin,
+    },
+    rules: {
+      ...graphqlPlugin.configs["flat/schema-all"].rules,
+    },
+  },
+
+  {
+    files: ["**/*.{ts,tsx,js,jsx}"],
     plugins: {
       "@graphql-eslint": graphqlPlugin,
     },
     processor: graphqlPlugin.processor,
-    rules: {
-      ...graphqlPlugin.configs.recommended.rules,
-    },
   },
 ]);
 
