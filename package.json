@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run codegen && next build",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -13,7 +13,7 @@
     "test:watch": "jest --watch",
     "e2e": "playwright test",
     "typecheck": "tsc --noEmit",
-    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen": "npx graphql-codegen --config codegen.ts",
     "codegen:watch": "npm run codegen -- --watch",
     "codegen:check": "npm run codegen -- --check"
   },
