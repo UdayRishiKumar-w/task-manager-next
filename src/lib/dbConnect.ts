@@ -28,10 +28,10 @@ export async function connectDB(): Promise<typeof mongoose> {
   }
 
   cache.promise ??= connect(MONGODB_URI, {
-		dbName: new URL(MONGODB_URI).pathname.replace("/", "") || "tasksdb",
-	}).then((m) => {
-		return m;
-	});
+    dbName: new URL(MONGODB_URI).pathname.replace("/", "") || "tasksdb",
+  }).then((m) => {
+    return m;
+  });
 
   cache.conn = await cache.promise;
   return cache.conn;
