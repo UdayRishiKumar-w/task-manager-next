@@ -1,5 +1,13 @@
 # task-manager-next
 
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?logo=typescript)
+![GraphQL](https://img.shields.io/badge/GraphQL-Apollo-E10098?logo=graphql)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?logo=mongodb)
+![License](https://img.shields.io/github/license/UdayRishiKumar-w/task-manager-next)
+
+---
+
 A full-stack productivity application built with Next.js (app router), TypeScript, GraphQL (Apollo Server), MongoDB (Mongoose), and NextAuth (credentials + GitHub), Apollo Client, shadcn UI, react-hook-form, and Zod. This project demonstrates modern web development practices, clean architecture, secure authentication, and fully typed end-to-end development.
 
 ## Tech Stack
@@ -30,13 +38,22 @@ A full-stack productivity application built with Next.js (app router), TypeScrip
 
 ## Run Locally
 
+- Clone repository
+
+```bash
+git clone https://github.com/UdayRishiKumar-w/task-manager-next.git
+cd task-manager-next
+```
+
+- Development server
+
 ```bash
 npm install
 npm run codegen
 npm run dev
 ```
 
-or
+- Docker setup
 
 ```bash
 docker compose up --build
