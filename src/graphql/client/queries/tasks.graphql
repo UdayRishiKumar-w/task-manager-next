@@ -12,10 +12,5 @@ query GetTasksWithStarted {
     started
     priority
     createdAt
-    user {
-      id
-      name
-      email
-    }
   }
 }

@@ -46,7 +46,7 @@ export default function DashboardTaskList() {
   const tasks: TaskFullFieldsFragment[] = raw.map((t) => getFragmentData(TaskFullFieldsFragmentDoc, t));
 
   return (
-    <div>
+    <>
       <div className="mb-4 flex items-center gap-4">
         <label htmlFor="status-filter" className="text-sm">
           Status:
@@ -138,6 +138,6 @@ export default function DashboardTaskList() {
           ))
         )}
       </div>
-    </div>
+    </>
   );
 }

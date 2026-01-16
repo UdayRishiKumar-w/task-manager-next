@@ -5,7 +5,4 @@ fragment TaskFullFields on Task {
   started
   priority
   createdAt
-  user {
-    ...UserFields
-  }
 }

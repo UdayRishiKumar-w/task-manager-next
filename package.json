@@ -18,7 +18,8 @@
     "typecheck": "tsc --noEmit",
     "codegen": "npx graphql-codegen --config codegen.ts",
     "codegen:watch": "npm run codegen -- --watch",
-    "codegen:check": "npm run codegen -- --check"
+    "codegen:check": "npm run codegen -- --check",
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@apollo/client": "^4.0.11",
