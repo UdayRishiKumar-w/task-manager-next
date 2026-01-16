@@ -17,9 +17,11 @@ yarn-error.log
 *.tsbuildinfo
 playwright-report
 test-results
+.editorconfig
 README.md
 .github
 e2e
+tests
 
 .husky
 .DS_Store
@@ -29,3 +31,11 @@ Thumbs.db
 .git
 .gitignore
 *.md
+
+# GraphQL Codegen
+src/gql
+src/server/generated/server.ts
+src/**/generated/schema.graphql
+src/graphql/generated/
+src/server/generated/
+*.snap
