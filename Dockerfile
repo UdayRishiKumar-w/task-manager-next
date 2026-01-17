@@ -5,7 +5,7 @@ ENV MONGODB_URI=${MONGODB_URI}
 FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN --mount=type=cache,target=/root/.npm,id=npm-cache-ptm,sharing=locked npm ci
+RUN --mount=type=cache,target=/root/.npm,id=npm-cache-ptm,sharing=locked npm ci --ignore-scripts
 
 FROM base AS builder
 WORKDIR /app
