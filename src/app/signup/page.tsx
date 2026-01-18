@@ -13,15 +13,13 @@ export default function SignUpPage() {
           <CardContent>
             <SignUpForm />
 
-            <div className="mt-4 flex items-center gap-2">
-              <div className="h-px flex-1 bg-gray-200" />
-              <span className="text-sm text-gray-500">OR</span>
-              <div className="h-px flex-1 bg-gray-200" />
+            <div className="my-4 flex items-center gap-2" aria-hidden="true">
+              <div className="h-px flex-1 bg-muted" />
+              <span className="text-sm text-muted-foreground">OR</span>
+              <div className="h-px flex-1 bg-muted" />
             </div>
 
-            <div className="mt-4">
-              <OAuthButtons />
-            </div>
+            <OAuthButtons />
           </CardContent>
         </Card>
       </div>

@@ -101,7 +101,12 @@ export default function DashboardTaskList() {
           tasks.map((task) => (
             <div key={task.id} className="flex items-center justify-between rounded border p-3">
               <div className="flex items-center gap-3">
-                <input type="checkbox" checked={task.completed} readOnly disabled />
+                <input
+                  type="checkbox"
+                  checked={task.completed}
+                  disabled
+                  aria-label={`Task ${task.title} is ${task.completed ? "completed" : "active"}`}
+                />
 
                 <div className="flex flex-col">
                   <span className={task.completed ? "font-medium text-slate-400 line-through" : "font-medium"}>

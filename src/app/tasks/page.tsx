@@ -1,11 +1,12 @@
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
 import { authOptions } from "@/lib/auth";
+import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Tasks - Task Manager",
   description: "Manage tasks — create, update and track progress.",
 };

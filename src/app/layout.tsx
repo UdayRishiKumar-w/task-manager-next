@@ -32,13 +32,22 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
             <header className="bg-gray-50 p-4 shadow-sm dark:bg-gray-800">
               <div className="mx-auto flex max-w-4xl items-center justify-between">
                 <h1 className="text-lg font-semibold">Task Manager</h1>
-                <Suspense fallback={<p>Loading...</p>}>
+                <Suspense fallback={<div className="h-8 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />}>
                   <HeaderAuth />
                 </Suspense>
               </div>
             </header>
             <main className="mx-auto max-w-4xl p-4">
-              <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
+              <Suspense
+                fallback={
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-8 w-48 rounded bg-gray-200 dark:bg-gray-700" />
+                    <div className="h-32 rounded bg-gray-200 dark:bg-gray-700" />
+                  </div>
+                }
+              >
+                {children}
+              </Suspense>
             </main>
           </AuthProvider>
         </ApolloClientProvider>

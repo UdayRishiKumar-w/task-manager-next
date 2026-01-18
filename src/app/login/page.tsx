@@ -14,7 +14,7 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const errorKey = searchParams.get("error");
 
-  const errorMessage = (errorKey && ERROR_MESSAGES[errorKey]) ?? null;
+  const errorMessage = errorKey ? (ERROR_MESSAGES[errorKey] ?? ERROR_MESSAGES.Default) : null;
 
   return (
     <div className="flex h-full items-center justify-center p-4">
@@ -24,13 +24,17 @@ export default function LoginPage() {
             <CardTitle>Sign in</CardTitle>
           </CardHeader>
           <CardContent>
-            {errorMessage && <p className="mb-3 rounded bg-red-100 p-2 text-sm text-red-700">{errorMessage}</p>}
+            {errorMessage && (
+              <p role="alert" className="mb-3 rounded bg-red-100 p-2 text-sm text-red-700">
+                {errorMessage}
+              </p>
+            )}
             <LoginForm />
 
-            <div className="my-4 flex items-center gap-2">
-              <div className="h-px flex-1 bg-gray-200" />
-              <span className="text-sm text-gray-500">OR</span>
-              <div className="h-px flex-1 bg-gray-200" />
+            <div className="my-4 flex items-center gap-2" aria-hidden="true">
+              <div className="h-px flex-1 bg-muted" />
+              <span className="text-sm text-muted-foreground">OR</span>
+              <div className="h-px flex-1 bg-muted" />
             </div>
 
             <OAuthButtons />
