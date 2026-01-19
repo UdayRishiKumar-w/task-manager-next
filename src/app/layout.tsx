@@ -22,6 +22,7 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <meta name="apple-mobile-web-app-title" content="Task Manager" />
       </head>
 
       <body
