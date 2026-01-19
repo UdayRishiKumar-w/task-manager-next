@@ -40,7 +40,7 @@ export default function DashboardTaskList() {
         <Skeleton height={48} />
       </div>
     );
-  if (error) return <p className="text-red-600">Error loading tasks: {error.message}</p>;
+  if (error) return <p className="text-red-600 dark:text-red-400">Error loading tasks: {error.message}</p>;
 
   const raw = data?.tasksPaginated?.items ?? [];
   const tasks: TaskFullFieldsFragment[] = raw.map((t) => getFragmentData(TaskFullFieldsFragmentDoc, t));
@@ -96,7 +96,7 @@ export default function DashboardTaskList() {
 
       <div className="space-y-3">
         {tasks.length === 0 ? (
-          <p className="text-slate-500">No tasks yet</p>
+          <p className="text-slate-500 dark:text-slate-400">No tasks yet</p>
         ) : (
           tasks.map((task) => (
             <div key={task.id} className="flex items-center justify-between rounded border p-3">
@@ -109,10 +109,14 @@ export default function DashboardTaskList() {
                 />
 
                 <div className="flex flex-col">
-                  <span className={task.completed ? "font-medium text-slate-400 line-through" : "font-medium"}>
+                  <span
+                    className={
+                      task.completed ? "font-medium text-slate-400 line-through dark:text-slate-600" : "font-medium"
+                    }
+                  >
                     {task.title}
                   </span>
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
                     {task.priority && (
                       <Badge
                         variant={
@@ -135,7 +139,7 @@ export default function DashboardTaskList() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 text-sm text-slate-500">
+                <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
                   <span>{task.started ? "Started" : "Not started"}</span>
                 </div>
               </div>

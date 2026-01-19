@@ -1,4 +1,6 @@
 import HeaderAuth from "@/components/HeaderAuth";
+import { ModeToggle } from "@/components/ModeToggle";
+import { ThemeProvider } from "@/components/theme-provider";
 import { WebVitals } from "@/components/web-vitals";
 import ApolloClientProvider from "@/graphql/client/ApolloClientProvider";
 import AuthProvider from "@/graphql/client/AuthProvider";
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
@@ -27,30 +29,37 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
         className={clsx("min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100", inter.className)}
       >
         {process.env.NODE_ENV === "development" && <WebVitals />}
-        <ApolloClientProvider>
-          <AuthProvider>
-            <header className="bg-gray-50 p-4 shadow-sm dark:bg-gray-800">
-              <div className="mx-auto flex max-w-4xl items-center justify-between">
-                <h1 className="text-lg font-semibold">Task Manager</h1>
-                <Suspense fallback={<div className="h-8 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />}>
-                  <HeaderAuth />
-                </Suspense>
-              </div>
-            </header>
-            <main className="mx-auto max-w-4xl p-4">
-              <Suspense
-                fallback={
-                  <div className="animate-pulse space-y-4">
-                    <div className="h-8 w-48 rounded bg-gray-200 dark:bg-gray-700" />
-                    <div className="h-32 rounded bg-gray-200 dark:bg-gray-700" />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ApolloClientProvider>
+            <AuthProvider>
+              <header className="bg-gray-50 p-4 shadow-sm dark:bg-gray-800">
+                <div className="mx-auto flex max-w-4xl items-center justify-between">
+                  <h1 className="text-lg font-semibold">Task Manager</h1>
+                  <div className="flex flex-row gap-2.5">
+                    <ModeToggle />
+                    <Suspense
+                      fallback={<div className="h-8 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />}
+                    >
+                      <HeaderAuth />
+                    </Suspense>
                   </div>
-                }
-              >
-                {children}
-              </Suspense>
-            </main>
-          </AuthProvider>
-        </ApolloClientProvider>
+                </div>
+              </header>
+              <main className="mx-auto max-w-4xl p-4">
+                <Suspense
+                  fallback={
+                    <div className="animate-pulse space-y-4">
+                      <div className="h-8 w-48 rounded bg-gray-200 dark:bg-gray-700" />
+                      <div className="h-32 rounded bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                  }
+                >
+                  {children}
+                </Suspense>
+              </main>
+            </AuthProvider>
+          </ApolloClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

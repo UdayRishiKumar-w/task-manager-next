@@ -32,7 +32,7 @@ export default function LoginForm() {
         </label>
         <Input id="email" {...register("email")} type="email" placeholder="Email" aria-invalid={!!errors.email} />
         {errors.email && (
-          <p role="alert" className="mt-1 text-sm text-red-600">
+          <p role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
             {errors.email.message}
           </p>
         )}
@@ -50,7 +50,7 @@ export default function LoginForm() {
           aria-invalid={!!errors.password}
         />
         {errors.password && (
-          <p role="alert" className="mt-1 text-sm text-red-600">
+          <p role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
             {errors.password.message}
           </p>
         )}
@@ -70,9 +70,9 @@ export default function LoginForm() {
         )}
       </Button>
 
-      <div className="text-center text-sm text-gray-600">
+      <div className="text-center text-sm text-gray-600 dark:text-gray-400">
         <span>Don&apos;t have an account? </span>
-        <Link href="/signup" className="cursor-pointer text-blue-600 hover:underline">
+        <Link href="/signup" className="cursor-pointer text-blue-600 hover:underline dark:text-blue-400">
           Sign up
         </Link>
       </div>

@@ -43,7 +43,7 @@ export default function TaskList() {
         <Skeleton height={48} />
       </div>
     );
-  if (error) return <p className="text-red-600">Error loading tasks: {error.message}</p>;
+  if (error) return <p className="text-red-600 dark:text-red-400">Error loading tasks: {error.message}</p>;
 
   const rawTasks = data?.getTasks ?? [];
   const tasks = rawTasks.map((t) => getFragmentData(TaskFullFieldsFragmentDoc, t));
@@ -118,10 +118,14 @@ export default function TaskList() {
               />
 
               <div className="flex flex-col">
-                <span className={task.completed ? "font-medium text-slate-400 line-through" : "font-medium"}>
+                <span
+                  className={
+                    task.completed ? "font-medium text-slate-400 line-through dark:text-slate-600" : "font-medium"
+                  }
+                >
                   {task.title}
                 </span>
-                <div className="text-xs text-slate-500">
+                <div className="text-xs text-slate-500 dark:text-slate-400">
                   {task.priority && (
                     <Badge
                       variant={
@@ -163,7 +167,10 @@ export default function TaskList() {
               </label>
 
               <button
-                className={clsx([loading ? "cursor-not-allowed" : "cursor-pointer", "text-sm text-red-600"])}
+                className={clsx([
+                  loading ? "cursor-not-allowed" : "cursor-pointer",
+                  "text-sm text-red-600 dark:text-red-400",
+                ])}
                 onClick={() => openDeleteDialog(task.id)}
               >
                 Delete

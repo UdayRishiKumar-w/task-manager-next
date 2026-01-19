@@ -18,14 +18,14 @@ export default async function TasksPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded bg-white p-6 shadow">
+      <div className="rounded bg-white p-6 shadow dark:bg-black">
         <h2 className="mb-4 text-lg font-semibold">Create Task</h2>
         <Suspense fallback={<div>Loading form...</div>}>
           <TaskForm />
         </Suspense>
       </div>
 
-      <div className="rounded bg-white p-6 shadow">
+      <div className="rounded bg-white p-6 shadow dark:bg-black">
         <h2 className="mb-4 text-lg font-semibold">Tasks</h2>
         <Suspense fallback={<div>Loading tasks...</div>}>
           <TaskList />

@@ -81,7 +81,7 @@ export default function TaskForm() {
           )}
         />
 
-        {errors.title && <p className="text-sm text-red-600">{errors.title.message}</p>}
+        {errors.title && <p className="text-sm text-red-600 dark:text-red-400">{errors.title.message}</p>}
 
         <Controller
           name="description"
@@ -97,7 +97,9 @@ export default function TaskForm() {
             />
           )}
         />
-        {errors.description && <p className="text-sm text-red-600">{errors.description?.message as string}</p>}
+        {errors.description && (
+          <p className="text-sm text-red-600 dark:text-red-400">{errors.description?.message as string}</p>
+        )}
       </div>
 
       <div className="w-32">
@@ -113,7 +115,7 @@ export default function TaskForm() {
               aria-label="Task priority"
               {...field}
               disabled={loading}
-              className={clsx(["w-full rounded border px-2", loading ? "cursor-not-allowed" : "cursor-pointer"])}
+              className={clsx(["w-full rounded border px-2 py-1", loading ? "cursor-not-allowed" : "cursor-pointer"])}
             >
               <option value="LOW">Low</option>
               <option value="MEDIUM">Medium</option>
@@ -123,7 +125,7 @@ export default function TaskForm() {
         />
       </div>
 
-      <div className="w-40">
+      <div className="w-42">
         <Controller
           control={control}
           name="dueDate"

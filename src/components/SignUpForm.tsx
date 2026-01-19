@@ -34,7 +34,7 @@ export default function SignUpForm() {
           Name
         </label>
         <Input id="name" {...register("name")} placeholder="Name" />
-        {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
+        {errors.name && <p className="text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>}
       </div>
 
       <div>
@@ -42,7 +42,7 @@ export default function SignUpForm() {
           Email
         </label>
         <Input id="email" {...register("email")} type="email" placeholder="Email" />
-        {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+        {errors.email && <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>}
       </div>
 
       <div>
@@ -50,16 +50,16 @@ export default function SignUpForm() {
           Password
         </label>
         <Input id="password" {...register("password")} type="password" placeholder="Password" />
-        {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+        {errors.password && <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>}
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         Create account
       </Button>
 
-      <p className="text-center text-sm text-gray-600">
+      <p className="text-center text-sm text-gray-600 dark:text-gray-400">
         Already have an account?{" "}
-        <Link href="/login" className="text-blue-600 hover:underline">
+        <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">
           Log in
         </Link>
       </p>
