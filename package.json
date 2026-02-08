@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@apollo/client": "^4.0.11",
-    "@apollo/server": "^5.2.0",
+    "@apollo/server": "^5.4.0",
     "@as-integrations/next": "^4.1.0",
     "@auth/mongodb-adapter": "^3.11.1",
     "@base-ui/react": "^1.0.0",
