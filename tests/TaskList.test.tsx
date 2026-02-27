@@ -25,8 +25,7 @@ jest.mock("@apollo/client/react", () => ({
 
 // Mock fragment masking helper
 jest.mock("@/gql/fragment-masking", () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getFragmentData: (_: any, data: any) => data,
+  getFragmentData: <TFragment,>(_doc: unknown, data: TFragment) => data,
 }));
 
 import TaskList from "@/components/TaskList";

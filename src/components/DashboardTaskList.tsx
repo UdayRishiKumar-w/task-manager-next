@@ -1,7 +1,7 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getFragmentData } from "@/gql";
+import { getFragmentData, type FragmentType } from "@/gql";
 import {
   TaskFullFieldsFragmentDoc,
   TasksPaginatedDocument,
@@ -9,6 +9,8 @@ import {
   type Priority,
   type TaskFilterInput,
   type TaskFullFieldsFragment,
+  type TasksPaginatedQuery,
+  type TasksPaginatedQueryVariables,
 } from "@/gql/graphql";
 import { useQuery } from "@apollo/client/react";
 import { useMemo, useState } from "react";
@@ -27,10 +29,13 @@ export default function DashboardTaskList() {
     return Object.keys(f).length ? f : undefined;
   }, [statusFilter, priorityFilter]);
 
-  const { data, loading, error, refetch } = useQuery(TasksPaginatedDocument, {
-    variables: { limit, offset, filter: filter ?? undefined },
-    fetchPolicy: "cache-and-network",
-  });
+  const { data, loading, error, refetch } = useQuery<TasksPaginatedQuery, TasksPaginatedQueryVariables>(
+    TasksPaginatedDocument,
+    {
+      variables: { limit, offset, filter: filter ?? undefined },
+      fetchPolicy: "cache-and-network",
+    },
+  );
 
   if (loading && !data)
     return (
@@ -42,8 +47,8 @@ export default function DashboardTaskList() {
     );
   if (error) return <p className="text-red-600 dark:text-red-400">Error loading tasks: {error.message}</p>;
 
-  const raw = data?.tasksPaginated?.items ?? [];
-  const tasks: TaskFullFieldsFragment[] = raw.map((t) => getFragmentData(TaskFullFieldsFragmentDoc, t));
+  const raw = (data?.tasksPaginated?.items ?? []) as FragmentType<typeof TaskFullFieldsFragmentDoc>[];
+  const tasks: TaskFullFieldsFragment[] = getFragmentData(TaskFullFieldsFragmentDoc, raw);
 
   return (
     <>

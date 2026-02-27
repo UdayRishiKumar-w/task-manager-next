@@ -11,7 +11,7 @@ test-results
 **/public
 **/.idea
 .gitignore
-package-lock.json
+pnpm-lock.yaml
 *.log
 .husky
 .DS_Store

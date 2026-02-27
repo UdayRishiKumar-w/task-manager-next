@@ -48,9 +48,9 @@ cd task-manager-next
 - Development server
 
 ```bash
-npm install
-npm run codegen
-npm run dev
+pnpm install
+pnpm codegen
+pnpm dev
 ```
 
 - Docker setup

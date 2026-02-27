@@ -3,6 +3,6 @@ set -e
 
 echo "Running pre-commit hook..."
 
-npx lint-staged || exit 1
+pnpm exec lint-staged || exit 1
 
 echo "staged files linting and formatting completed successfully, proceeding with commit."

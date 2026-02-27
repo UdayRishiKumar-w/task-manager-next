@@ -11,13 +11,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getFragmentData } from "@/gql";
+import { getFragmentData, type FragmentType } from "@/gql";
 import {
   DeleteTaskDocument,
   GetTasksDocument,
   TaskFullFieldsFragmentDoc,
   ToggleTaskDocument,
   UpdateTaskDocument,
+  type GetTasksQuery,
+  type ToggleTaskMutation,
+  type ToggleTaskMutationVariables,
 } from "@/gql/graphql";
 import type { Reference, StoreObject } from "@apollo/client/cache";
 import { useMutation, useQuery } from "@apollo/client/react";
@@ -25,11 +28,11 @@ import clsx from "clsx";
 import { useState } from "react";
 
 export default function TaskList() {
-  const { data, loading, error } = useQuery(GetTasksDocument, {
+  const { data, loading, error } = useQuery<GetTasksQuery>(GetTasksDocument, {
     fetchPolicy: "cache-and-network",
   });
 
-  const [toggleTask] = useMutation(ToggleTaskDocument);
+  const [toggleTask] = useMutation<ToggleTaskMutation, ToggleTaskMutationVariables>(ToggleTaskDocument);
   const [deleteTask] = useMutation(DeleteTaskDocument);
   const [updateTask] = useMutation(UpdateTaskDocument);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -45,8 +48,8 @@ export default function TaskList() {
     );
   if (error) return <p className="text-red-600 dark:text-red-400">Error loading tasks: {error.message}</p>;
 
-  const rawTasks = data?.getTasks ?? [];
-  const tasks = rawTasks.map((t) => getFragmentData(TaskFullFieldsFragmentDoc, t));
+  const rawTasks = (data?.getTasks ?? []) as FragmentType<typeof TaskFullFieldsFragmentDoc>[];
+  const tasks = getFragmentData(TaskFullFieldsFragmentDoc, rawTasks);
 
   const handleDeleteTask = async (taskId: string) => {
     await deleteTask({

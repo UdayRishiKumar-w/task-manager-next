@@ -102,9 +102,18 @@ export const authOptions: NextAuthOptions = {
       try {
         await connectDB();
 
-        const { id: providerId, email, login, name, avatar_url } = profile as any;
+        interface GitHubProfile {
+          id: string | number;
+          email?: string | null;
+          login?: string | null;
+          name?: string | null;
+          avatar_url?: string | null;
+        }
 
-        const resolvedEmail = email ?? (login ? `${login}@github.com` : undefined);
+        const { id: providerId, email, login, name, avatar_url } = profile as GitHubProfile;
+
+        const resolvedEmail: string =
+          email ?? (login ? `${login}@github.com` : null) ?? `${String(providerId)}@github.local`;
 
         let dbUser =
           (providerId && (await User.findOne({ authProviderId: String(providerId) }))) ||
@@ -114,7 +123,7 @@ export const authOptions: NextAuthOptions = {
           dbUser = await User.create({
             name: name ?? login ?? "GitHub User",
             email: resolvedEmail,
-            image: avatar_url,
+            image: avatar_url ?? null,
             authProviderId: String(providerId),
             password: "",
           });

@@ -67,3 +67,4 @@ src/gql
 src/graphql/generated/
 src/server/graphql/generated/
 *.snap
+.corepack
