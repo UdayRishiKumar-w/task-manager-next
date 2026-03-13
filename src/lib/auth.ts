@@ -38,7 +38,7 @@ export const authOptions: NextAuthOptions = {
 
         const { email, password, name } = credentials as { email: string; password: string; name?: string };
 
-        const existing = await User.findOne({ email }).exec();
+        const existing = await User.findOne({ email }).select("+password").exec();
 
         if (name) {
           // Signup flow: name present -> create new user
