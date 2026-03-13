@@ -7,9 +7,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 export default function SignUpForm() {
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from") || "/tasks";
+
   const {
     register,
     handleSubmit,
@@ -24,7 +28,7 @@ export default function SignUpForm() {
       name: values.name,
       email: values.email,
       password: values.password,
-      callbackUrl: "/tasks",
+      callbackUrl: from,
     });
   };
 
@@ -64,7 +68,10 @@ export default function SignUpForm() {
 
       <p className="text-center text-sm text-gray-600 dark:text-gray-400">
         Already have an account?{" "}
-        <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">
+        <Link
+          href={from === "/tasks" ? "/login" : `/login?from=${encodeURIComponent(from)}`}
+          className="text-blue-600 hover:underline dark:text-blue-400"
+        >
           Log in
         </Link>
       </p>

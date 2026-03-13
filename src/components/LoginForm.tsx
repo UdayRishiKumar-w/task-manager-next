@@ -81,7 +81,10 @@ export default function LoginForm() {
 
       <div className="text-center text-sm text-gray-600 dark:text-gray-400">
         <span>Don&apos;t have an account? </span>
-        <Link href="/signup" className="cursor-pointer text-blue-600 hover:underline dark:text-blue-400">
+        <Link
+          href={from === "/tasks" ? "/signup" : `/signup?from=${encodeURIComponent(from)}`}
+          className="cursor-pointer text-blue-600 hover:underline dark:text-blue-400"
+        >
           Sign up
         </Link>
       </div>
