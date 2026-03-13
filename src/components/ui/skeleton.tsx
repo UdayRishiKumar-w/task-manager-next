@@ -1,14 +1,12 @@
-import React from "react";
-
 export function Skeleton({
   width = "100%",
   height = 12,
   className = "",
-}: {
+}: Readonly<{
   width?: string | number;
   height?: number;
   className?: string;
-}) {
+}>) {
   return (
     <div
       aria-hidden

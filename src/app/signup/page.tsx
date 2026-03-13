@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function SignUpPage() {
   return (
     <div className="flex h-full items-center justify-center p-4">
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-md">
         <Card>
           <CardHeader>
-            <CardTitle>Create an account</CardTitle>
+            <CardTitle className="text-xl sm:text-2xl">Create an account</CardTitle>
           </CardHeader>
           <CardContent>
             <SignUpForm />

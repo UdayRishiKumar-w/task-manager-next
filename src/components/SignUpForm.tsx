@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signupSchema, SignupSchema } from "@/lib/validators/signup";
 import { zodResolver } from "@hookform/resolvers/zod";
+import clsx from "clsx";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -53,7 +54,11 @@ export default function SignUpForm() {
         {errors.password && <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        className={clsx("w-full", isSubmitting ? "cursor-not-allowed" : "cursor-pointer")}
+        disabled={isSubmitting}
+      >
         Create account
       </Button>
 

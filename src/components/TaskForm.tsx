@@ -63,7 +63,7 @@ export default function TaskForm() {
         e.preventDefault();
         handleSubmit(onSubmit)(e);
       }}
-      className="flex gap-2"
+      className="flex flex-col gap-3 sm:flex-row sm:gap-2"
       aria-label="Create new task"
     >
       <div className="flex-1">
@@ -102,7 +102,7 @@ export default function TaskForm() {
               aria-describedby={errors.description ? "description-error" : undefined}
               aria-invalid={!!errors.description}
               placeholder="Description (optional)"
-              className={clsx(["mt-2 w-full rounded border p-2", loading ? "cursor-not-allowed" : "cursor-pointer"])}
+              className={clsx("mt-2 w-full rounded border p-2", loading ? "cursor-not-allowed" : "cursor-pointer")}
               rows={2}
               disabled={loading}
             />
@@ -115,58 +115,63 @@ export default function TaskForm() {
         )}
       </div>
 
-      <div className="w-32">
-        <Controller
-          name="priority"
-          control={control}
-          render={({ field }) => (
-            <select
-              id="priority-task-form-input"
-              aria-label="Task priority"
-              aria-describedby={errors.priority ? "priority-error" : undefined}
-              aria-invalid={!!errors.priority}
-              {...field}
-              disabled={loading}
-              className={clsx(["w-full rounded border px-2 py-1", loading ? "cursor-not-allowed" : "cursor-pointer"])}
-            >
-              <option value="LOW">Low</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="HIGH">High</option>
-            </select>
+      <div className="flex flex-col gap-2 sm:w-auto sm:flex-row">
+        <div className="w-full sm:w-32">
+          <Controller
+            name="priority"
+            control={control}
+            render={({ field }) => (
+              <select
+                id="priority-task-form-input"
+                aria-label="Task priority"
+                aria-describedby={errors.priority ? "priority-error" : undefined}
+                aria-invalid={!!errors.priority}
+                {...field}
+                disabled={loading}
+                className={clsx(
+                  "w-full rounded border border-gray-300 bg-white px-2 py-1 text-gray-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100",
+                  loading ? "cursor-not-allowed opacity-60" : "cursor-pointer",
+                )}
+              >
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+              </select>
+            )}
+          />
+          {errors.priority && (
+            <p id="priority-error" className="text-sm text-red-600 dark:text-red-400" role="alert">
+              {errors.priority.message}
+            </p>
           )}
-        />
-        {errors.priority && (
-          <p id="priority-error" className="text-sm text-red-600 dark:text-red-400" role="alert">
-            {errors.priority.message}
-          </p>
-        )}
-      </div>
+        </div>
 
-      <div className="w-42">
-        <Controller
-          control={control}
-          name="dueDate"
-          render={({ field }) => (
-            <DatePicker
-              id="dueDate"
-              value={field.value || null}
-              onChange={(iso) => field.onChange(iso ?? "")}
-              disabled={loading}
-              aria-label="Task due date"
-            />
-          )}
-        />
-      </div>
+        <div className="w-full sm:w-42">
+          <Controller
+            control={control}
+            name="dueDate"
+            render={({ field }) => (
+              <DatePicker
+                id="dueDate"
+                value={field.value || null}
+                onChange={(iso) => field.onChange(iso ?? "")}
+                disabled={loading}
+                aria-label="Task due date"
+              />
+            )}
+          />
+        </div>
 
-      <Button
-        type="submit"
-        disabled={loading}
-        variant="default"
-        aria-label={loading ? "Adding task..." : "Add task"}
-        className={clsx(loading ? "cursor-not-allowed" : "cursor-pointer")}
-      >
-        {loading ? "Adding..." : "Add"}
-      </Button>
+        <Button
+          type="submit"
+          disabled={loading}
+          variant="default"
+          aria-label={loading ? "Adding task..." : "Add task"}
+          className={clsx("w-full sm:w-auto", loading ? "cursor-not-allowed" : "cursor-pointer")}
+        >
+          {loading ? "Adding..." : "Add"}
+        </Button>
+      </div>
     </form>
   );
 }

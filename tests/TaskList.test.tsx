@@ -12,7 +12,7 @@ jest.mock("@apollo/client/react", () => ({
           title: "Test task",
           completed: false,
           priority: "MEDIUM",
-          createdAt: new Date().toISOString(),
+          createdAt: "1640000000000",
           user: { __typename: "User", id: "u1", name: "Alice", email: "a@example.com" },
         },
       ],

@@ -1,5 +1,7 @@
 import HeaderAuth from "@/components/HeaderAuth";
+import { MainContent } from "@/components/MainContent";
 import { ModeToggle } from "@/components/ModeToggle";
+import { AuthStatusSkeleton } from "@/components/skeletons/AuthStatusSkeleton";
 import { ThemeProvider } from "@/components/theme-provider";
 import { WebVitals } from "@/components/web-vitals";
 import ApolloClientProvider from "@/graphql/client/ApolloClientProvider";
@@ -8,6 +10,7 @@ import "@/styles/globals.css";
 import clsx from "clsx";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Link from "next/link";
 import { Suspense, type PropsWithChildren } from "react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -23,6 +26,8 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <meta name="apple-mobile-web-app-title" content="Task Manager" />
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)" />
       </head>
 
       <body
@@ -33,31 +38,25 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ApolloClientProvider>
             <AuthProvider>
-              <header className="bg-gray-50 p-4 shadow-sm dark:bg-gray-800">
-                <div className="mx-auto flex max-w-4xl items-center justify-between">
-                  <h1 className="text-lg font-semibold">Task Manager</h1>
-                  <div className="flex flex-row gap-2.5">
+              <header className="bg-gray-50 px-3 py-3 shadow-sm sm:px-4 sm:py-4 dark:bg-gray-800" role="banner">
+                <nav className="mx-auto flex max-w-7xl items-center justify-between gap-2" aria-label="Main navigation">
+                  <Link
+                    href="/"
+                    className="text-base font-semibold text-gray-900 transition-colors hover:text-blue-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none sm:text-lg dark:text-gray-100 dark:hover:text-blue-400"
+                    aria-label="Task Manager home"
+                  >
+                    Task Manager
+                  </Link>
+                  <div className="flex flex-row items-center gap-1.5 sm:gap-2.5">
                     <ModeToggle />
-                    <Suspense
-                      fallback={<div className="h-8 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />}
-                    >
+                    <Suspense fallback={<AuthStatusSkeleton />}>
                       <HeaderAuth />
                     </Suspense>
                   </div>
-                </div>
+                </nav>
               </header>
-              <main className="mx-auto max-w-4xl p-4">
-                <Suspense
-                  fallback={
-                    <div className="animate-pulse space-y-4">
-                      <div className="h-8 w-48 rounded bg-gray-200 dark:bg-gray-700" />
-                      <div className="h-32 rounded bg-gray-200 dark:bg-gray-700" />
-                    </div>
-                  }
-                >
-                  {children}
-                </Suspense>
-              </main>
+
+              <MainContent>{children}</MainContent>
             </AuthProvider>
           </ApolloClientProvider>
         </ThemeProvider>

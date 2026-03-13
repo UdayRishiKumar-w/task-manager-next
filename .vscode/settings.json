@@ -1,7 +1,12 @@
 {
 	"tailwindCSS.experimental.classRegex": [
-		["className\\s*:\\s*['\"]([^'\"]*)['\"]"],
-		["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+		[
+			"className\\s*:\\s*['\"]([^'\"]*)['\"]"
+		],
+		[
+			"clsx\\(([^)]*)\\)",
+			"(?:'|\"|`)([^']*)(?:'|\"|`)"
+		]
 	],
 	"files.associations": {
 		"*.css": "tailwindcss"
@@ -41,11 +46,11 @@
 	"typescript.preferences.importModuleSpecifier": "non-relative",
 	"javascript.preferences.importModuleSpecifier": "non-relative",
 	"stylelint.validate": [
-    "css",
-    "html",
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-],
+		"css",
+		"html",
+		"javascript",
+		"javascriptreact",
+		"typescript",
+		"typescriptreact"
+	],
 }

@@ -1,36 +1,42 @@
-import TaskForm from "@/components/TaskForm";
-import TaskList from "@/components/TaskList";
-import { authOptions } from "@/lib/auth";
+import { TaskFormSkeleton } from "@/components/skeletons/TaskFormSkeleton";
+import { TaskListSkeleton } from "@/components/skeletons/TaskListSkeleton";
 import type { Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
+
+const TaskForm = dynamic(() => import("@/components/TaskForm"), {
+  loading: () => <TaskFormSkeleton />,
+});
+
+const TaskList = dynamic(() => import("@/components/TaskList"), {
+  loading: () => <TaskListSkeleton />,
+});
 
 export const metadata: Metadata = {
   title: "Tasks - Task Manager",
   description: "Manage tasks — create, update and track progress.",
 };
 
-export default async function TasksPage() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) redirect("/api/auth/signin?callbackUrl=/tasks");
-
+export default function TasksPage() {
   return (
-    <div className="space-y-6">
-      <div className="rounded bg-white p-6 shadow dark:bg-black">
-        <h2 className="mb-4 text-lg font-semibold">Create Task</h2>
-        <Suspense fallback={<div>Loading form...</div>}>
+    <div className="space-y-4 sm:space-y-6">
+      <section className="rounded bg-white p-4 shadow sm:p-6 dark:bg-black" aria-labelledby="create-task-heading">
+        <h2 id="create-task-heading" className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
+          Create Task
+        </h2>
+        <Suspense fallback={<TaskFormSkeleton />}>
           <TaskForm />
         </Suspense>
-      </div>
+      </section>
 
-      <div className="rounded bg-white p-6 shadow dark:bg-black">
-        <h2 className="mb-4 text-lg font-semibold">Tasks</h2>
-        <Suspense fallback={<div>Loading tasks...</div>}>
+      <section className="rounded bg-white p-4 shadow sm:p-6 dark:bg-black" aria-labelledby="tasks-heading">
+        <h2 id="tasks-heading" className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
+          Your Tasks
+        </h2>
+        <Suspense fallback={<TaskListSkeleton />}>
           <TaskList />
         </Suspense>
-      </div>
+      </section>
     </div>
   );
 }

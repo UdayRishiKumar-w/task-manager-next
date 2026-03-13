@@ -4,11 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { loginSchema, LoginSchema } from "@/lib/validators/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import clsx from "clsx";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 export default function LoginForm() {
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from") || "/tasks";
+
   const {
     register,
     handleSubmit,
@@ -20,7 +25,7 @@ export default function LoginForm() {
   const handleLogin = async (values: LoginSchema) => {
     await signIn("credentials", {
       ...values,
-      callbackUrl: "/tasks",
+      callbackUrl: from,
     });
   };
 
@@ -56,7 +61,11 @@ export default function LoginForm() {
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        className={clsx("w-full", isSubmitting ? "cursor-not-allowed" : "cursor-pointer")}
+        disabled={isSubmitting}
+      >
         {isSubmitting ? (
           <span className="inline-flex items-center gap-2">
             <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden>

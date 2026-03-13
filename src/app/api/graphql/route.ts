@@ -28,7 +28,7 @@ async function handler(req: NextRequest) {
   await connectDB();
 
   cachedHandler ??= startServerAndCreateNextHandler(server, {
-    context: async (r: NextRequest) => createContext(r),
+    context: async () => createContext(),
   });
 
   return cachedHandler(req);
