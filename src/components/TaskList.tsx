@@ -92,6 +92,7 @@ export default function TaskList() {
                 type="checkbox"
                 checked={task.completed}
                 className="cursor-pointer"
+                aria-label={`Mark "${task.title}" as ${task.completed ? "incomplete" : "complete"}`}
                 onChange={() => {
                   void toggleTask({
                     variables: { id: task.id },

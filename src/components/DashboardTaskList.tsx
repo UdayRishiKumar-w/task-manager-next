@@ -110,7 +110,8 @@ export default function DashboardTaskList() {
                   type="checkbox"
                   checked={task.completed}
                   disabled
-                  aria-label={`Task ${task.title} is ${task.completed ? "completed" : "active"}`}
+                  aria-label={`Mark "${task.title}" as ${task.completed ? "incomplete" : "complete"}`}
+                  aria-readonly="true"
                 />
 
                 <div className="flex flex-col">
