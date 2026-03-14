@@ -1,3 +1,5 @@
+import type { AppStore } from "@/store";
+import { makeStore } from "@/store";
 import type { Task } from "@/types/types";
 import type { MockLink } from "@apollo/client/testing";
 import { MockedProvider } from "@apollo/client/testing/react";
@@ -6,6 +8,7 @@ import userEvent from "@testing-library/user-event";
 import type { DocumentNode, GraphQLError } from "graphql";
 import { Session } from "next-auth";
 import React, { ReactElement } from "react";
+import { Provider } from "react-redux";
 
 export * from "@testing-library/react";
 export { default as userEvent } from "@testing-library/user-event";
@@ -15,19 +18,22 @@ type MockedResponse = MockLink.MockedResponse;
 interface CustomRenderOptions extends Omit<RenderOptions, "wrapper"> {
   mocks?: readonly MockedResponse[];
   session?: Session | null;
+  store?: AppStore;
 }
 
 interface CustomRenderResult extends RenderResult {
   userEvent: ReturnType<typeof userEvent.setup>;
+  store: AppStore;
 }
 
 interface AllTheProvidersProps {
   readonly children: React.ReactNode;
   readonly mocks?: readonly MockedResponse[];
   readonly session?: Session | null | undefined;
+  readonly store: AppStore;
 }
 
-function AllTheProviders({ children, mocks = [], session }: AllTheProvidersProps) {
+function AllTheProviders({ children, mocks = [], session, store }: AllTheProvidersProps) {
   if (session !== undefined) {
     try {
       const nextAuthReact = jest.requireMock("next-auth/react");
@@ -40,15 +46,19 @@ function AllTheProviders({ children, mocks = [], session }: AllTheProvidersProps
     } catch {}
   }
 
-  return <MockedProvider mocks={mocks}>{children}</MockedProvider>;
+  return (
+    <Provider store={store}>
+      <MockedProvider mocks={mocks}>{children}</MockedProvider>
+    </Provider>
+  );
 }
 
 function customRender(ui: ReactElement, options?: CustomRenderOptions): CustomRenderResult {
-  const { mocks = [], session, ...renderOptions } = options || {};
+  const { mocks = [], session, store = makeStore(), ...renderOptions } = options || {};
 
   const renderResult = render(ui, {
     wrapper: ({ children }) => (
-      <AllTheProviders mocks={mocks} session={session}>
+      <AllTheProviders mocks={mocks} session={session} store={store}>
         {children}
       </AllTheProviders>
     ),
@@ -57,6 +67,7 @@ function customRender(ui: ReactElement, options?: CustomRenderOptions): CustomRe
 
   return {
     ...renderResult,
+    store,
     userEvent: userEvent.setup(),
   };
 }

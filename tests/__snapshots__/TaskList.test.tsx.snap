@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`TaskList renders tasks and matches snapshot 1`] = `
+<div>
+  <ul
+    aria-label="Task list"
+    class="space-y-3"
+  >
+    <li
+      class="flex justify-between gap-3 rounded border border-gray-300 bg-white p-3 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center dark:border-gray-600 dark:bg-gray-800"
+    >
+      <div
+        class="flex items-start gap-3 sm:items-center"
+      >
+        <input
+          aria-label="Mark "Test task" as complete"
+          class="mt-0.5 h-5 w-5 shrink-0 cursor-pointer rounded border-gray-400 text-blue-600 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:mt-0 dark:border-gray-500 dark:bg-gray-700"
+          type="checkbox"
+        />
+        <div
+          class="flex min-w-0 flex-1 flex-col"
+        >
+          <span
+            class="font-medium wrap-break-word text-gray-900 dark:text-gray-100"
+          >
+            Test task
+          </span>
+          <div
+            class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-600 dark:text-gray-400"
+          >
+            <span
+              aria-label="Priority: MEDIUM"
+              class="h-5 gap-1 rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&>svg]:size-3! inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-colors overflow-hidden group/badge bg-primary text-primary-foreground [a]:hover:bg-primary/80 mr-1"
+              data-slot="badge"
+              data-variant="default"
+            >
+              MEDIUM
+            </span>
+            <time
+              datetime="2021-12-20T11:33:20.000Z"
+            >
+              Created
+               
+              20 Dec
+            </time>
+          </div>
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-3 sm:gap-4 sm:self-auto"
+      >
+        <label
+          class="inline-flex cursor-pointer items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300"
+        >
+          <input
+            aria-label="Mark "Test task" as started"
+            class="h-4 w-4 cursor-pointer rounded border-gray-400 text-blue-600 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-gray-500 dark:bg-gray-700"
+            type="checkbox"
+          />
+          <span
+            class="whitespace-nowrap"
+          >
+            Started
+          </span>
+        </label>
+        <button
+          aria-label="Delete task "Test task""
+          class="cursor-pointer hover:underline text-sm font-medium whitespace-nowrap text-red-700 transition-colors focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:outline-none dark:text-red-500"
+        >
+          Delete
+        </button>
+      </div>
+    </li>
+  </ul>
+</div>
+`;

@@ -67,5 +67,4 @@ src/gql
 # GraphQL Codegen
 src/graphql/generated/
 src/server/graphql/generated/
-*.snap
 .corepack

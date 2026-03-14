@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { WebVitals } from "@/components/web-vitals";
 import ApolloClientProvider from "@/graphql/client/ApolloClientProvider";
 import AuthProvider from "@/graphql/client/AuthProvider";
+import { ReduxProvider } from "@/store/ReduxProvider";
 import "@/styles/globals.css";
 import clsx from "clsx";
 import type { Metadata } from "next";
@@ -38,25 +39,30 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ApolloClientProvider>
             <AuthProvider>
-              <header className="bg-gray-50 px-3 py-3 shadow-sm sm:px-4 sm:py-4 dark:bg-gray-800" role="banner">
-                <nav className="mx-auto flex max-w-7xl items-center justify-between gap-2" aria-label="Main navigation">
-                  <Link
-                    href="/"
-                    className="text-base font-semibold text-gray-900 transition-colors hover:text-blue-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none sm:text-lg dark:text-gray-100 dark:hover:text-blue-400"
-                    aria-label="Task Manager home"
+              <ReduxProvider>
+                <header className="bg-gray-50 px-3 py-3 shadow-sm sm:px-4 sm:py-4 dark:bg-gray-800" role="banner">
+                  <nav
+                    className="mx-auto flex max-w-7xl items-center justify-between gap-2"
+                    aria-label="Main navigation"
                   >
-                    Task Manager
-                  </Link>
-                  <div className="flex flex-row items-center gap-1.5 sm:gap-2.5">
-                    <ModeToggle />
-                    <Suspense fallback={<AuthStatusSkeleton />}>
-                      <HeaderAuth />
-                    </Suspense>
-                  </div>
-                </nav>
-              </header>
+                    <Link
+                      href="/"
+                      className="text-base font-semibold text-gray-900 transition-colors hover:text-blue-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none sm:text-lg dark:text-gray-100 dark:hover:text-blue-400"
+                      aria-label="Task Manager home"
+                    >
+                      Task Manager
+                    </Link>
+                    <div className="flex flex-row items-center gap-1.5 sm:gap-2.5">
+                      <ModeToggle />
+                      <Suspense fallback={<AuthStatusSkeleton />}>
+                        <HeaderAuth />
+                      </Suspense>
+                    </div>
+                  </nav>
+                </header>
 
-              <MainContent>{children}</MainContent>
+                <MainContent>{children}</MainContent>
+              </ReduxProvider>
             </AuthProvider>
           </ApolloClientProvider>
         </ThemeProvider>
