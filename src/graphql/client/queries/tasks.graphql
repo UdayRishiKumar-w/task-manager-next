@@ -3,14 +3,3 @@ query GetTasks {
     ...TaskFullFields
   }
 }
-
-query GetTasksWithStarted {
-  getTasks {
-    id
-    title
-    completed
-    started
-    priority
-    createdAt
-  }
-}

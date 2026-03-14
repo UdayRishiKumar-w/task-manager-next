@@ -1,0 +1,7 @@
+mutation ToggleTaskCompleted($id: ID!) {
+  toggleTaskCompleted(id: $id) {
+    id
+    completed
+    started
+  }
+}

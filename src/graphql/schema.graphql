@@ -12,7 +12,8 @@ scalar DateTime
 type Mutation {
   createTask(input: CreateTaskInput!): Task!
   deleteTask(id: ID!): Boolean!
-  toggleTask(id: ID!): Task!
+  toggleTaskCompleted(id: ID!): Task!
+  toggleTaskStarted(id: ID!): Task!
   updateTask(input: UpdateTaskInput!): Task!
 }
 

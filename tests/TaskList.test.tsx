@@ -11,6 +11,7 @@ jest.mock("@apollo/client/react", () => ({
           id: "1",
           title: "Test task",
           completed: false,
+          started: false,
           priority: "MEDIUM",
           createdAt: "1640000000000",
           user: { __typename: "User", id: "u1", name: "Alice", email: "a@example.com" },
@@ -21,6 +22,7 @@ jest.mock("@apollo/client/react", () => ({
     error: null,
   }),
   useMutation: () => [jest.fn(), {}],
+  useApolloClient: () => ({ cache: { identify: jest.fn(), modify: jest.fn() } }),
 }));
 
 // Mock fragment masking helper

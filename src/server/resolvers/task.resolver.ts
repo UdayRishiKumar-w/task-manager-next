@@ -147,17 +147,30 @@ export const taskResolvers = {
       const res = await Task.findOneAndDelete({ _id: id, userId: ctx.userId }).lean();
       return !!res;
     },
-    toggleTask: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+    toggleTaskCompleted: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
       if (!ctx.userId) throw new GraphQLError("Unauthorized");
 
-      const task = await Task.findOne({
-        _id: id,
-        userId: ctx.userId,
-      });
-
+      const task = await Task.findOne({ _id: id, userId: ctx.userId });
       if (!task) throw new GraphQLError("Task not found");
 
       task.completed = !task.completed;
+      // Update task to started when task is marked as completed
+      if (task.completed && !task.started) {
+        task.started = true;
+      }
+
+      await task.save();
+
+      return task;
+    },
+    toggleTaskStarted: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      if (!ctx.userId) throw new GraphQLError("Unauthorized");
+
+      const task = await Task.findOne({ _id: id, userId: ctx.userId });
+      if (!task) throw new GraphQLError("Task not found");
+      if (task.completed) throw new GraphQLError("Cannot change started status of a completed task");
+
+      task.started = !task.started;
       await task.save();
 
       return task;

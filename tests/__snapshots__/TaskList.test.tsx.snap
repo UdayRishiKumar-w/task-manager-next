@@ -50,11 +50,11 @@ exports[`TaskList renders tasks and matches snapshot 1`] = `
         class="flex items-center gap-3 sm:gap-4 sm:self-auto"
       >
         <label
-          class="inline-flex cursor-pointer items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300"
+          class="inline-flex items-center gap-2 text-xs font-medium cursor-pointer text-gray-700 dark:text-gray-300"
         >
           <input
             aria-label="Mark "Test task" as started"
-            class="h-4 w-4 cursor-pointer rounded border-gray-400 text-blue-600 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-gray-500 dark:bg-gray-700"
+            class="h-4 w-4 rounded border-gray-400 text-blue-600 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-gray-500 dark:bg-gray-700 cursor-pointer"
             type="checkbox"
           />
           <span

@@ -16,25 +16,37 @@ import {
   DeleteTaskDocument,
   GetTasksDocument,
   TaskFullFieldsFragmentDoc,
-  ToggleTaskDocument,
-  UpdateTaskDocument,
+  ToggleTaskCompletedDocument,
+  ToggleTaskStartedDocument,
   type GetTasksQuery,
-  type ToggleTaskMutation,
-  type ToggleTaskMutationVariables,
+  type ToggleTaskCompletedMutation,
+  type ToggleTaskCompletedMutationVariables,
+  type ToggleTaskStartedMutation,
+  type ToggleTaskStartedMutationVariables,
 } from "@/gql/graphql";
 import type { Reference, StoreObject } from "@apollo/client/cache";
 import { useMutation, useQuery } from "@apollo/client/react";
 import clsx from "clsx";
 import { useState } from "react";
 
+function getPriorityVariant(priority: string): "destructive" | "secondary" | "default" {
+  if (priority === "HIGH") return "destructive";
+  if (priority === "LOW") return "secondary";
+  return "default";
+}
+
 export default function TaskList() {
   const { data, loading, error } = useQuery<GetTasksQuery>(GetTasksDocument, {
     fetchPolicy: "cache-and-network",
   });
 
-  const [toggleTask] = useMutation<ToggleTaskMutation, ToggleTaskMutationVariables>(ToggleTaskDocument);
+  const [toggleTaskCompleted] = useMutation<ToggleTaskCompletedMutation, ToggleTaskCompletedMutationVariables>(
+    ToggleTaskCompletedDocument,
+  );
+  const [toggleTaskStarted] = useMutation<ToggleTaskStartedMutation, ToggleTaskStartedMutationVariables>(
+    ToggleTaskStartedDocument,
+  );
   const [deleteTask] = useMutation(DeleteTaskDocument);
-  const [updateTask] = useMutation(UpdateTaskDocument);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pendingDeleteTaskId, setPendingDeleteTaskId] = useState<string | null>(null);
 
@@ -80,6 +92,50 @@ export default function TaskList() {
     setPendingDeleteTaskId(null);
   };
 
+  const handleToggleCompleted = (taskId: string, currentCompleted: boolean, currentStarted: boolean) => {
+    const nextCompleted = !currentCompleted;
+    const nextStarted = nextCompleted ? true : currentStarted;
+
+    void toggleTaskCompleted({
+      variables: { id: taskId },
+      optimisticResponse: {
+        toggleTaskCompleted: { __typename: "Task", id: taskId, completed: nextCompleted, started: nextStarted },
+      },
+      update: (cache, { data: mutationData }) => {
+        const result = mutationData?.toggleTaskCompleted;
+        if (!result) return;
+        const cacheId = cache.identify({ __typename: "Task", id: taskId });
+        if (!cacheId) return;
+        cache.modify({
+          id: cacheId,
+          fields: {
+            completed: () => result.completed,
+            started: () => result.started,
+          },
+        });
+      },
+    });
+  };
+
+  const handleToggleStarted = (taskId: string, currentStarted: boolean) => {
+    void toggleTaskStarted({
+      variables: { id: taskId },
+      optimisticResponse: {
+        toggleTaskStarted: { __typename: "Task", id: taskId, started: !currentStarted },
+      },
+      update: (cache, { data: mutationData }) => {
+        const result = mutationData?.toggleTaskStarted;
+        if (!result) return;
+        const cacheId = cache.identify({ __typename: "Task", id: taskId });
+        if (!cacheId) return;
+        cache.modify({
+          id: cacheId,
+          fields: { started: () => result.started },
+        });
+      },
+    });
+  };
+
   return (
     <>
       {tasks.length === 0 ? (
@@ -101,32 +157,7 @@ export default function TaskList() {
                     checked={task.completed}
                     className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer rounded border-gray-400 text-blue-600 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:mt-0 dark:border-gray-500 dark:bg-gray-700"
                     aria-label={`Mark "${task.title}" as ${task.completed ? "incomplete" : "complete"}`}
-                    onChange={() => {
-                      void toggleTask({
-                        variables: { id: task.id },
-                        optimisticResponse: {
-                          toggleTask: {
-                            __typename: "Task",
-                            id: task.id,
-                            completed: !task.completed,
-                          },
-                        },
-                        update: (cache, { data }) => {
-                          const completed = data?.toggleTask.completed;
-                          if (completed === undefined) return;
-                          const cacheId = cache.identify({ __typename: "Task", id: task.id });
-                          if (!cacheId) return;
-                          cache.modify({
-                            id: cacheId,
-                            fields: {
-                              completed() {
-                                return completed;
-                              },
-                            },
-                          });
-                        },
-                      });
-                    }}
+                    onChange={() => handleToggleCompleted(task.id, task.completed, !!task.started)}
                   />
 
                   <div className="flex min-w-0 flex-1 flex-col">
@@ -143,9 +174,7 @@ export default function TaskList() {
                     <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                       {task.priority && (
                         <Badge
-                          variant={
-                            task.priority === "HIGH" ? "destructive" : task.priority === "LOW" ? "secondary" : "default"
-                          }
+                          variant={getPriorityVariant(task.priority)}
                           className="mr-1"
                           aria-label={`Priority: ${task.priority}`}
                         >
@@ -166,28 +195,33 @@ export default function TaskList() {
                 </div>
 
                 <div className="flex items-center gap-3 sm:gap-4 sm:self-auto">
-                  <label className="inline-flex cursor-pointer items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+                  <label
+                    className={clsx(
+                      "inline-flex items-center gap-2 text-xs font-medium",
+                      task.completed
+                        ? "cursor-not-allowed text-gray-400 opacity-50 dark:text-gray-500"
+                        : "cursor-pointer text-gray-700 dark:text-gray-300",
+                    )}
+                  >
                     <input
                       type="checkbox"
                       checked={!!task.started}
-                      className="h-4 w-4 cursor-pointer rounded border-gray-400 text-blue-600 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-gray-500 dark:bg-gray-700"
+                      disabled={task.completed}
+                      className={clsx(
+                        "h-4 w-4 rounded border-gray-400 text-blue-600 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-gray-500 dark:bg-gray-700",
+                        task.completed ? "cursor-not-allowed" : "cursor-pointer",
+                      )}
                       aria-label={`Mark "${task.title}" as ${task.started ? "not started" : "started"}`}
-                      onChange={() => {
-                        void updateTask({
-                          variables: { input: { id: task.id, started: !task.started } },
-                          refetchQueries: [{ query: GetTasksDocument }],
-                          awaitRefetchQueries: true,
-                        });
-                      }}
+                      onChange={() => handleToggleStarted(task.id, !!task.started)}
                     />
                     <span className="whitespace-nowrap">Started</span>
                   </label>
 
                   <button
-                    className={clsx([
+                    className={clsx(
                       loading ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:underline",
                       "text-sm font-medium whitespace-nowrap text-red-700 transition-colors focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:outline-none dark:text-red-500",
-                    ])}
+                    )}
                     onClick={() => openDeleteDialog(task.id)}
                     disabled={loading}
                     aria-label={`Delete task "${task.title}"`}
@@ -203,9 +237,7 @@ export default function TaskList() {
       <AlertDialog
         open={dialogOpen}
         onOpenChange={(v) => {
-          if (!v) {
-            setPendingDeleteTaskId(null);
-          }
+          if (!v) setPendingDeleteTaskId(null);
           setDialogOpen(v);
         }}
       >

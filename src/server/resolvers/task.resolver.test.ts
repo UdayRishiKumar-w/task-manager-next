@@ -369,38 +369,143 @@ describe("Task Mutation Resolvers", () => {
     });
   });
 
-  describe("toggleTask", () => {
-    it("toggles completed status from false to true", async () => {
+  describe("toggleTaskCompleted", () => {
+    it("toggles completed from false to true and sets started", async () => {
       const ctx = createMockAuthenticatedContext("user-1");
       const mockTaskDoc = {
         _id: "task-1",
+        completed: false,
+        started: false,
+        save: jest.fn().mockResolvedValue(undefined),
+      };
+
+      mockTask.findOne.mockResolvedValue(mockTaskDoc);
+
+      const result = await taskResolvers.Mutation.toggleTaskCompleted({}, { id: "task-1" }, ctx);
+
+      expect(mockTask.findOne).toHaveBeenCalledWith({ _id: "task-1", userId: "user-1" });
+      expect(mockTaskDoc.completed).toBe(true);
+      expect(mockTaskDoc.started).toBe(true);
+      expect(mockTaskDoc.save).toHaveBeenCalled();
+      expect(result).toEqual(mockTaskDoc);
+    });
+
+    it("toggles completed from false to true without changing already-started status", async () => {
+      const ctx = createMockAuthenticatedContext("user-1");
+      const mockTaskDoc = {
+        _id: "task-1",
+        completed: false,
+        started: true, // already started
+        save: jest.fn().mockResolvedValue(undefined),
+      };
+
+      mockTask.findOne.mockResolvedValue(mockTaskDoc);
+      const result = await taskResolvers.Mutation.toggleTaskCompleted({}, { id: "task-1" }, ctx);
+
+      expect(mockTaskDoc.completed).toBe(true);
+      expect(mockTaskDoc.started).toBe(true); // should remain true
+      expect(result).toEqual(mockTaskDoc);
+    });
+
+    it("toggles completed from true to false without changing started", async () => {
+      const ctx = createMockAuthenticatedContext("user-1");
+      const mockTaskDoc = {
+        _id: "task-1",
+        completed: true,
+        started: true,
+        save: jest.fn().mockResolvedValue(undefined),
+      };
+
+      mockTask.findOne.mockResolvedValue(mockTaskDoc);
+
+      const result = await taskResolvers.Mutation.toggleTaskCompleted({}, { id: "task-1" }, ctx);
+
+      expect(mockTaskDoc.completed).toBe(false);
+      expect(mockTaskDoc.started).toBe(true);
+      expect(result).toEqual(mockTaskDoc);
+    });
+
+    it("throws error when task not found", async () => {
+      const ctx = createMockAuthenticatedContext("user-1");
+      mockTask.findOne.mockResolvedValue(null);
+
+      await expect(taskResolvers.Mutation.toggleTaskCompleted({}, { id: "nonexistent" }, ctx)).rejects.toThrow(
+        "Task not found",
+      );
+    });
+
+    it("throws Unauthorized when user is not authenticated", async () => {
+      const ctx = createMockGraphQLContext();
+
+      await expect(taskResolvers.Mutation.toggleTaskCompleted({}, { id: "task-1" }, ctx)).rejects.toThrow(
+        "Unauthorized",
+      );
+      expect(mockTask.findOne).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("toggleTaskStarted", () => {
+    it("toggles started from false to true", async () => {
+      const ctx = createMockAuthenticatedContext("user-1");
+      const mockTaskDoc = {
+        _id: "task-1",
+        started: false,
+        save: jest.fn().mockResolvedValue(undefined),
+      };
+
+      mockTask.findOne.mockResolvedValue(mockTaskDoc);
+
+      const result = await taskResolvers.Mutation.toggleTaskStarted({}, { id: "task-1" }, ctx);
+
+      expect(mockTask.findOne).toHaveBeenCalledWith({ _id: "task-1", userId: "user-1" });
+      expect(mockTaskDoc.started).toBe(true);
+      expect(mockTaskDoc.save).toHaveBeenCalled();
+      expect(result).toEqual(mockTaskDoc);
+    });
+
+    it("toggles started from true to false", async () => {
+      const ctx = createMockAuthenticatedContext("user-1");
+      const mockTaskDoc = {
+        _id: "task-1",
+        started: true,
         completed: false,
         save: jest.fn().mockResolvedValue(undefined),
       };
 
       mockTask.findOne.mockResolvedValue(mockTaskDoc);
 
-      const result = await taskResolvers.Mutation.toggleTask({}, { id: "task-1" }, ctx);
+      const result = await taskResolvers.Mutation.toggleTaskStarted({}, { id: "task-1" }, ctx);
 
-      expect(mockTask.findOne).toHaveBeenCalledWith({ _id: "task-1", userId: "user-1" });
-      expect(mockTaskDoc.completed).toBe(true);
+      expect(mockTaskDoc.started).toBe(false);
       expect(mockTaskDoc.save).toHaveBeenCalled();
       expect(result).toEqual(mockTaskDoc);
     });
 
     it("throws error when task not found", async () => {
       const ctx = createMockAuthenticatedContext("user-1");
-
       mockTask.findOne.mockResolvedValue(null);
 
-      await expect(taskResolvers.Mutation.toggleTask({}, { id: "nonexistent" }, ctx)).rejects.toThrow("Task not found");
+      await expect(taskResolvers.Mutation.toggleTaskStarted({}, { id: "nonexistent" }, ctx)).rejects.toThrow(
+        "Task not found",
+      );
     });
 
-    it("throws Unauthorized error when user is not authenticated", async () => {
+    it("throws Unauthorized when user is not authenticated", async () => {
       const ctx = createMockGraphQLContext();
 
-      await expect(taskResolvers.Mutation.toggleTask({}, { id: "task-1" }, ctx)).rejects.toThrow("Unauthorized");
+      await expect(taskResolvers.Mutation.toggleTaskStarted({}, { id: "task-1" }, ctx)).rejects.toThrow("Unauthorized");
       expect(mockTask.findOne).not.toHaveBeenCalled();
+    });
+
+    it("throws error when task is completed", async () => {
+      const ctx = createMockAuthenticatedContext("user-1");
+      const mockTaskDoc = { _id: "task-1", started: true, completed: true, save: jest.fn() };
+      mockTask.findOne.mockResolvedValue(mockTaskDoc);
+
+      await expect(taskResolvers.Mutation.toggleTaskStarted({}, { id: "task-1" }, ctx)).rejects.toThrow(
+        "Cannot change started status of a completed task",
+      );
+      expect(mockTaskDoc.save).not.toHaveBeenCalled();
     });
   });
 });
