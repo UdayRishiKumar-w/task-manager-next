@@ -68,3 +68,4 @@ src/gql
 src/graphql/generated/
 src/server/graphql/generated/
 .corepack
+/playwright/.cache/
