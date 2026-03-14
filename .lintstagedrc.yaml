@@ -1,4 +1,4 @@
-"*.{js,mjs,ts,cjs}":
+"*.{js,mjs,ts,cjs,graphql}":
   - eslint --fix
   - prettier --write
 
@@ -11,5 +11,5 @@
   - stylelint --fix
   - prettier --write
 
-"*.{json,md,yaml,yml,graphql}":
+"*.{json,md,yaml,yml}":
   - prettier --write
