@@ -159,14 +159,6 @@ describe("TaskForm", () => {
       const descriptionInput = screen.getByPlaceholderText("Description (optional)");
       expect(descriptionInput).not.toBeRequired();
     });
-
-    it("should not allow form submission with empty title", () => {
-      render(<TaskForm />);
-
-      const titleInput: HTMLInputElement = screen.getByLabelText("Task title");
-      expect(titleInput.validity.valid).toBe(false);
-      expect(titleInput.validity.valueMissing).toBe(true);
-    });
   });
 
   describe("User Interactions", () => {

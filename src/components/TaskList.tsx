@@ -190,6 +190,25 @@ export default function TaskList() {
                           })}
                         </time>
                       )}
+                      {task.dueDate &&
+                        (() => {
+                          const due = new Date(task.dueDate as unknown as string);
+                          const isOverdue = !task.completed && due < new Date();
+                          return (
+                            <time
+                              dateTime={due.toISOString()}
+                              className={clsx({ "text-red-600 dark:text-red-400": isOverdue })}
+                              aria-label={`Due ${due.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`}
+                            >
+                              Due{" "}
+                              {due.toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                              })}
+                              {isOverdue && " (overdue)"}
+                            </time>
+                          );
+                        })()}
                     </div>
                   </div>
                 </div>

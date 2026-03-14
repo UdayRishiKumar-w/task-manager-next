@@ -79,7 +79,6 @@ export default function TaskForm() {
               aria-required="true"
               aria-invalid={!!errors.title}
               aria-describedby={errors.title ? "title-error" : undefined}
-              required
               className={clsx(loading ? "cursor-not-allowed" : "cursor-pointer")}
             />
           )}

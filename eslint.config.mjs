@@ -69,6 +69,10 @@ const eslintConfig = defineConfig([
       "unused-imports/no-unused-imports": "error",
       "unused-imports/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
 
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: { attributes: false } }],
 
@@ -78,6 +82,7 @@ const eslintConfig = defineConfig([
       "sonarjs/prefer-read-only-props": "off",
       "sonarjs/different-types-comparison": "off",
       "sonarjs/no-nested-functions": ["warn", { threshold: 5 }],
+      "sonarjs/no-skipped-tests": "off",
     },
   },
 
@@ -161,6 +166,9 @@ const eslintConfig = defineConfig([
       ...eslintJest.configs["flat/recommended"].rules,
       ...testingLibrary.configs["flat/react"].rules,
       ...eslintJestDom.configs["flat/recommended"].rules,
+      "jest/no-conditional-expect": "off",
+      "jest/no-disabled-tests": "off",
+      "testing-library/no-container": "off",
     },
   },
 

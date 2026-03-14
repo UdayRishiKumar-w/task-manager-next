@@ -13,8 +13,9 @@ import {
   type TasksPaginatedQueryVariables,
 } from "@/gql/graphql";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setPriorityFilter, setStatusFilter } from "@/store/taskFiltersSlice";
+import { selectPriorityFilter, selectStatusFilter, setPriorityFilter, setStatusFilter } from "@/store/taskFiltersSlice";
 import { useQuery } from "@apollo/client/react";
+import clsx from "clsx";
 import { useMemo } from "react";
 
 function getPriorityVariant(priority: string): "destructive" | "secondary" | "default" {
@@ -45,59 +46,95 @@ function TaskListContent({
     return <p className="text-red-600 dark:text-red-400">Error loading tasks: {error.message}</p>;
   }
   if (tasks.length === 0) {
-    return <p className="text-slate-500 dark:text-slate-400">No tasks yet</p>;
+    return <p className="text-gray-600 dark:text-gray-400">No tasks yet</p>;
   }
   return (
-    <div className="space-y-3">
-      {tasks.map((task) => (
-        <div key={task.id} className="flex items-center justify-between rounded border p-3">
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={task.completed}
-              disabled
-              aria-label={`"${task.title}" is ${task.completed ? "completed" : "not completed"}`}
-              aria-readonly="true"
-            />
-            <div className="flex flex-col">
-              <span
-                className={
-                  task.completed ? "font-medium text-slate-400 line-through dark:text-slate-600" : "font-medium"
-                }
-              >
-                {task.title}
-              </span>
-              <div className="text-xs text-slate-500 dark:text-slate-400">
-                {task.priority && (
-                  <Badge variant={getPriorityVariant(task.priority)} className="mr-2">
-                    {task.priority}
-                  </Badge>
-                )}
-                {task.createdAt && (
-                  <span>
-                    Created{" "}
-                    {new Date(Number(task.createdAt)).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </span>
-                )}
+    <ul className="space-y-3" aria-label="Task list">
+      {tasks.map((task) => {
+        const createdAtNum = Number(task.createdAt);
+        const isValidDate = task.createdAt && !Number.isNaN(createdAtNum);
+
+        return (
+          <li
+            key={task.id}
+            className="flex justify-between gap-3 rounded border border-gray-300 bg-white p-3 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center dark:border-gray-600 dark:bg-gray-800"
+          >
+            <div className="flex items-start gap-3 sm:items-center">
+              <input
+                type="checkbox"
+                checked={task.completed}
+                disabled
+                className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-400 text-blue-600 sm:mt-0 dark:border-gray-500 dark:bg-gray-700"
+                aria-label={`"${task.title}" is ${task.completed ? "completed" : "not completed"}`}
+                aria-readonly="true"
+              />
+              <div className="flex min-w-0 flex-1 flex-col">
+                <span
+                  className={clsx(
+                    "font-medium wrap-break-word",
+                    task.completed
+                      ? "text-gray-500 line-through dark:text-gray-500"
+                      : "text-gray-900 dark:text-gray-100",
+                  )}
+                >
+                  {task.title}
+                </span>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                  {task.priority && (
+                    <Badge
+                      variant={getPriorityVariant(task.priority)}
+                      className="mr-1"
+                      aria-label={`Priority: ${task.priority}`}
+                    >
+                      {task.priority}
+                    </Badge>
+                  )}
+                  {isValidDate && (
+                    <time dateTime={new Date(createdAtNum).toISOString()}>
+                      Created {new Date(createdAtNum).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                    </time>
+                  )}
+                  {task.dueDate &&
+                    (() => {
+                      const due = new Date(task.dueDate as unknown as string);
+                      const isOverdue = !task.completed && due < new Date();
+                      return (
+                        <time
+                          dateTime={due.toISOString()}
+                          className={clsx({ "text-red-600 dark:text-red-400": isOverdue })}
+                          aria-label={`Due ${due.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`}
+                        >
+                          Due {due.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                          {isOverdue && " (overdue)"}
+                        </time>
+                      );
+                    })()}
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-              <span>{task.started ? "Started" : "Not started"}</span>
+            <div className="flex items-center gap-3 sm:gap-4">
+              <label className="inline-flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={!!task.started}
+                  disabled
+                  className="h-4 w-4 rounded border-gray-400 text-blue-600 dark:border-gray-500 dark:bg-gray-700"
+                  aria-label={`"${task.title}" is ${task.started ? "started" : "not started"}`}
+                />
+                <span className="whitespace-nowrap">Started</span>
+              </label>
             </div>
-          </div>
-        </div>
-      ))}
-    </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
 export default function DashboardTaskList() {
   const dispatch = useAppDispatch();
-  const statusFilter = useAppSelector((s) => s.taskFilters.status);
-  const priorityFilter = useAppSelector((s) => s.taskFilters.priority);
+  const statusFilter = useAppSelector(selectStatusFilter);
+  const priorityFilter = useAppSelector(selectPriorityFilter);
 
   const limit = 50;
   const offset = 0;

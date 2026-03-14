@@ -1,4 +1,5 @@
 import type { InputMaybe, Priority } from "@/gql/graphql";
+import { RootState } from "@/store";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface TaskFiltersState {
@@ -26,3 +27,6 @@ const taskFiltersSlice = createSlice({
 
 export const { setStatusFilter, setPriorityFilter } = taskFiltersSlice.actions;
 export default taskFiltersSlice.reducer;
+
+export const selectStatusFilter = (s: RootState) => s.taskFilters.status;
+export const selectPriorityFilter = (s: RootState) => s.taskFilters.priority;
