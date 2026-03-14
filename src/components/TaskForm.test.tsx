@@ -32,7 +32,6 @@ describe("TaskForm", () => {
 
       const titleInput = screen.getByLabelText("Task title");
       expect(titleInput).toBeRequired();
-      expect(titleInput).toHaveAttribute("aria-required", "true");
     });
 
     it.skip("should associate error messages with form fields using aria-describedby", async () => {
@@ -45,8 +44,8 @@ describe("TaskForm", () => {
 
       await waitFor(() => {
         expect(titleInput).toHaveAttribute("aria-invalid", "true");
-        expect(titleInput).toHaveAttribute("aria-describedby", "title-error");
       });
+      expect(titleInput).toHaveAttribute("aria-describedby", "title-error");
     });
 
     it.skip("should announce errors to screen readers with role=alert", async () => {
@@ -324,7 +323,7 @@ describe("TaskForm", () => {
 
       await userEvent.type(titleInput, "Test Task");
 
-      expect(submitButton).not.toBeDisabled();
+      expect(submitButton).toBeEnabled();
     });
   });
 });

@@ -61,7 +61,7 @@ export default function TaskForm() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit(onSubmit)(e);
+        void handleSubmit(onSubmit)(e);
       }}
       className="flex flex-col gap-3 sm:flex-row sm:gap-2"
       aria-label="Create new task"

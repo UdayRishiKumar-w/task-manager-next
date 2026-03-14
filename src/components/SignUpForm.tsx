@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { signupSchema, SignupSchema } from "@/lib/validators/signup";
+import { signupSchema, type SignupSchema } from "@/lib/validators/signup";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { signIn } from "next-auth/react";
@@ -33,7 +33,7 @@ export default function SignUpForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-4">
       <div>
         <label className="sr-only" htmlFor="name">
           Name

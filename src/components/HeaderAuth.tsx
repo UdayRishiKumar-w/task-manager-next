@@ -58,7 +58,7 @@ export default function HeaderAuth() {
         Hi, {session.user?.name || session.user?.email || "there"}
       </span>
       <button
-        onClick={() => signOut({ callbackUrl: "/login" })}
+        onClick={() => void signOut({ callbackUrl: "/login" })}
         className="cursor-pointer rounded border-2 border-red-700 px-2.5 py-1.5 text-xs font-medium text-red-700 transition-colors hover:bg-red-700 hover:text-white focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:outline-none sm:px-3 sm:text-sm dark:border-red-500 dark:text-red-500 dark:hover:bg-red-500 dark:hover:text-white"
         aria-label="Sign out of your account"
       >

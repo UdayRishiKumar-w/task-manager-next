@@ -10,7 +10,7 @@ export default function OAuthButtons() {
   return (
     <div className="mt-4 space-y-2">
       <button
-        onClick={() => signIn("github", { callbackUrl: from })}
+        onClick={() => void signIn("github", { callbackUrl: from })}
         className="flex w-full cursor-pointer items-center justify-center gap-2 rounded border py-2"
       >
         <span>Continue with GitHub</span>

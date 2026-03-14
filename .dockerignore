@@ -19,7 +19,6 @@ yarn-error.log
 playwright-report
 test-results
 .editorconfig
-README.md
 .github
 e2e
 tests
@@ -36,6 +35,9 @@ docker-compose.yml
 .git
 .gitignore
 *.md
+
+/playwright/.cache/
+/playwright/.auth/
 
 # GraphQL Codegen
 src/gql

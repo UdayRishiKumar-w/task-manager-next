@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { loginSchema, LoginSchema } from "@/lib/validators/auth";
+import { loginSchema, type LoginSchema } from "@/lib/validators/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { signIn } from "next-auth/react";
@@ -30,7 +30,12 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(handleLogin)} className="space-y-4" aria-busy={isSubmitting} aria-live="polite">
+    <form
+      onSubmit={(e) => void handleSubmit(handleLogin)(e)}
+      className="space-y-4"
+      aria-busy={isSubmitting}
+      aria-live="polite"
+    >
       <div>
         <label className="sr-only" htmlFor="email">
           Email
