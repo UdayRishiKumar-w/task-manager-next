@@ -2,20 +2,23 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import type { CreateTaskInput as GQLCreateTaskInput } from "@/gql/graphql";
 import { CreateTaskDocument, GetTasksDocument } from "@/gql/graphql";
 import { createTaskSchema, type CreateTaskInput } from "@/lib/validators/taskSchema";
 import { useMutation } from "@apollo/client/react";
-import { clsx } from "clsx";
 
 export default function TaskForm() {
   const [createTask, { loading }] = useMutation(CreateTaskDocument);
 
-  const taskFormDefaultValues = {
+  const defaultValues = {
     title: "",
     priority: "MEDIUM" as "LOW" | "MEDIUM" | "HIGH",
     description: "",
@@ -31,7 +34,7 @@ export default function TaskForm() {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(createTaskSchema),
-    defaultValues: taskFormDefaultValues,
+    defaultValues,
     shouldFocusError: true,
   });
 
@@ -45,16 +48,17 @@ export default function TaskForm() {
       input.dueDate = new Date(values.dueDate).toISOString();
     }
 
-    await createTask({
-      variables: { input: input as GQLCreateTaskInput },
-      refetchQueries: [{ query: GetTasksDocument }],
-      awaitRefetchQueries: true,
-    });
-
-    reset({
-      ...taskFormDefaultValues,
-      dueDate: new Date().toISOString(),
-    });
+    try {
+      await createTask({
+        variables: { input: input as GQLCreateTaskInput },
+        refetchQueries: [{ query: GetTasksDocument }],
+        awaitRefetchQueries: true,
+      });
+      reset({ ...defaultValues, dueDate: new Date().toISOString() });
+      toast.success(`Task "${values.title}" created`);
+    } catch {
+      toast.error(`Task "${values.title}" failed to create`);
+    }
   };
 
   return (
@@ -66,7 +70,7 @@ export default function TaskForm() {
       className="flex flex-col gap-3 sm:flex-row sm:gap-2"
       aria-label="Create new task"
     >
-      <div className="flex-1">
+      <div className="flex-1 space-y-2">
         <Controller
           name="title"
           control={control}
@@ -79,11 +83,9 @@ export default function TaskForm() {
               aria-required="true"
               aria-invalid={!!errors.title}
               aria-describedby={errors.title ? "title-error" : undefined}
-              className={clsx(loading ? "cursor-not-allowed" : "cursor-pointer")}
             />
           )}
         />
-
         {errors.title && (
           <p id="title-error" className="text-sm text-red-600 dark:text-red-400" role="alert">
             {errors.title.message}
@@ -94,14 +96,12 @@ export default function TaskForm() {
           name="description"
           control={control}
           render={({ field }) => (
-            <textarea
+            <Textarea
               {...field}
-              id="task-description"
               aria-label="Task description"
               aria-describedby={errors.description ? "description-error" : undefined}
               aria-invalid={!!errors.description}
               placeholder="Description (optional)"
-              className={clsx("mt-2 w-full rounded border p-2", loading ? "cursor-not-allowed" : "cursor-pointer")}
               rows={2}
               disabled={loading}
             />
@@ -109,64 +109,58 @@ export default function TaskForm() {
         />
         {errors.description && (
           <p id="description-error" className="text-sm text-red-600 dark:text-red-400" role="alert">
-            {errors.description?.message as string}
+            {errors.description.message as string}
           </p>
         )}
       </div>
 
-      <div className="flex flex-col gap-2 sm:w-auto sm:flex-row">
-        <div className="w-full sm:w-32">
+      <div className="flex flex-col gap-2 sm:w-auto sm:flex-row sm:items-start">
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="priority-task-form-input" className="sr-only">
+            Priority
+          </Label>
           <Controller
             name="priority"
             control={control}
             render={({ field }) => (
-              <select
-                id="priority-task-form-input"
-                aria-label="Task priority"
-                aria-describedby={errors.priority ? "priority-error" : undefined}
-                aria-invalid={!!errors.priority}
-                {...field}
-                disabled={loading}
-                className={clsx(
-                  "w-full rounded border border-gray-300 bg-white px-2 py-1 text-gray-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100",
-                  loading ? "cursor-not-allowed opacity-60" : "cursor-pointer",
-                )}
-              >
-                <option value="LOW">Low</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HIGH">High</option>
-              </select>
+              <Select value={field.value} onValueChange={field.onChange} disabled={loading}>
+                <SelectTrigger id="priority-task-form-input" className="w-32" aria-label="Task priority">
+                  <SelectValue placeholder="Priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="LOW">Low</SelectItem>
+                  <SelectItem value="MEDIUM">Medium</SelectItem>
+                  <SelectItem value="HIGH">High</SelectItem>
+                </SelectContent>
+              </Select>
             )}
           />
           {errors.priority && (
-            <p id="priority-error" className="text-sm text-red-600 dark:text-red-400" role="alert">
+            <p className="text-sm text-red-600 dark:text-red-400" role="alert">
               {errors.priority.message}
             </p>
           )}
         </div>
 
-        <div className="w-full sm:w-42">
-          <Controller
-            control={control}
-            name="dueDate"
-            render={({ field }) => (
-              <DatePicker
-                id="dueDate"
-                value={field.value || null}
-                onChange={(iso) => field.onChange(iso ?? "")}
-                disabled={loading}
-                aria-label="Task due date"
-              />
-            )}
-          />
-        </div>
+        <Controller
+          control={control}
+          name="dueDate"
+          render={({ field }) => (
+            <DatePicker
+              id="dueDate"
+              value={field.value || null}
+              onChange={(iso) => field.onChange(iso ?? "")}
+              disabled={loading}
+              aria-label="Task due date"
+            />
+          )}
+        />
 
         <Button
           type="submit"
           disabled={loading}
-          variant="default"
           aria-label={loading ? "Adding task..." : "Add task"}
-          className={clsx("w-full sm:w-auto", loading ? "cursor-not-allowed" : "cursor-pointer")}
+          className="w-full sm:w-auto"
         >
           {loading ? "Adding..." : "Add"}
         </Button>

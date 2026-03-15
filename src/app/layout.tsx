@@ -3,6 +3,7 @@ import { MainContent } from "@/components/MainContent";
 import { ModeToggle } from "@/components/ModeToggle";
 import { AuthStatusSkeleton } from "@/components/skeletons/AuthStatusSkeleton";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { WebVitals } from "@/components/web-vitals";
 import ApolloClientProvider from "@/graphql/client/ApolloClientProvider";
 import AuthProvider from "@/graphql/client/AuthProvider";
@@ -33,14 +34,20 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
 
       <body
         suppressHydrationWarning
-        className={clsx("min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100", inter.className)}
+        className={clsx(
+          "flex h-dvh flex-col bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100",
+          inter.className,
+        )}
       >
         {process.env.NODE_ENV === "development" && <WebVitals />}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ApolloClientProvider>
             <AuthProvider>
               <ReduxProvider>
-                <header className="bg-gray-50 px-3 py-3 shadow-sm sm:px-4 sm:py-4 dark:bg-gray-800" role="banner">
+                <header
+                  className="shrink-0 border-b border-gray-200 bg-gray-50 px-3 py-3 sm:px-4 sm:py-4 dark:border-gray-700 dark:bg-gray-800"
+                  role="banner"
+                >
                   <nav
                     className="mx-auto flex max-w-7xl items-center justify-between gap-2"
                     aria-label="Main navigation"
@@ -62,6 +69,7 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
                 </header>
 
                 <MainContent>{children}</MainContent>
+                <Toaster richColors closeButton />
               </ReduxProvider>
             </AuthProvider>
           </ApolloClientProvider>

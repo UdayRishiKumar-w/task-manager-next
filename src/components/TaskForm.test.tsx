@@ -123,25 +123,36 @@ describe("TaskForm", () => {
     it("should set priority select default value to MEDIUM", () => {
       render(<TaskForm />);
 
-      const prioritySelect = screen.getByLabelText("Task priority");
-      expect(prioritySelect).toHaveValue("MEDIUM");
+      // Select renders a combobox trigger showing the current value
+      const priorityTrigger = screen.getByRole("combobox", { name: /task priority/i });
+      expect(priorityTrigger).toHaveTextContent("Medium");
     });
 
-    it("should provide all priority options in select dropdown", () => {
-      render(<TaskForm />);
+    it("should provide all priority options in select dropdown", async () => {
+      const { userEvent } = render(<TaskForm />);
 
-      expect(screen.getByRole("option", { name: "Low" })).toBeInTheDocument();
-      expect(screen.getByRole("option", { name: "Medium" })).toBeInTheDocument();
-      expect(screen.getByRole("option", { name: "High" })).toBeInTheDocument();
+      const priorityTrigger = screen.getByRole("combobox", { name: /task priority/i });
+      await userEvent.click(priorityTrigger);
+
+      await waitFor(() => {
+        expect(screen.getByRole("option", { name: "Low" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "Medium" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "High" })).toBeInTheDocument();
+      });
     });
 
-    it("should render priority options in correct order", () => {
-      render(<TaskForm />);
+    it("should render priority options in correct order", async () => {
+      const { userEvent } = render(<TaskForm />);
 
-      const options = screen.getAllByRole("option");
-      expect(options[0]).toHaveTextContent("Low");
-      expect(options[1]).toHaveTextContent("Medium");
-      expect(options[2]).toHaveTextContent("High");
+      const priorityTrigger = screen.getByRole("combobox", { name: /task priority/i });
+      await userEvent.click(priorityTrigger);
+
+      await waitFor(() => {
+        const options = screen.getAllByRole("option");
+        expect(options[0]).toHaveTextContent("Low");
+        expect(options[1]).toHaveTextContent("Medium");
+        expect(options[2]).toHaveTextContent("High");
+      });
     });
   });
 
@@ -183,10 +194,17 @@ describe("TaskForm", () => {
     it("should allow user to change priority selection", async () => {
       const { userEvent } = render(<TaskForm />);
 
-      const prioritySelect = screen.getByLabelText("Task priority");
-      await userEvent.selectOptions(prioritySelect, "HIGH");
+      const priorityTrigger = screen.getByRole("combobox", { name: /task priority/i });
+      await userEvent.click(priorityTrigger);
 
-      expect(prioritySelect).toHaveValue("HIGH");
+      await waitFor(() => {
+        expect(screen.getByRole("option", { name: "High" })).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByRole("option", { name: "High" }));
+
+      await waitFor(() => {
+        expect(priorityTrigger).toHaveTextContent("High");
+      });
     });
 
     it("should allow user to clear title input after typing", async () => {
@@ -211,16 +229,25 @@ describe("TaskForm", () => {
     it("should allow user to change priority multiple times", async () => {
       const { userEvent } = render(<TaskForm />);
 
-      const prioritySelect = screen.getByLabelText("Task priority");
+      const priorityTrigger = screen.getByRole("combobox", { name: /task priority/i });
 
-      await userEvent.selectOptions(prioritySelect, "HIGH");
-      expect(prioritySelect).toHaveValue("HIGH");
+      // Select High
+      await userEvent.click(priorityTrigger);
+      expect(await screen.findByRole("option", { name: "High" })).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("option", { name: "High" }));
+      await waitFor(() => expect(priorityTrigger).toHaveTextContent("High"));
 
-      await userEvent.selectOptions(prioritySelect, "LOW");
-      expect(prioritySelect).toHaveValue("LOW");
+      // Select Low
+      await userEvent.click(priorityTrigger);
+      expect(await screen.findByRole("option", { name: "Low" })).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("option", { name: "Low" }));
+      await waitFor(() => expect(priorityTrigger).toHaveTextContent("Low"));
 
-      await userEvent.selectOptions(prioritySelect, "MEDIUM");
-      expect(prioritySelect).toHaveValue("MEDIUM");
+      // Select Medium
+      await userEvent.click(priorityTrigger);
+      expect(await screen.findByRole("option", { name: "Medium" })).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("option", { name: "Medium" }));
+      await waitFor(() => expect(priorityTrigger).toHaveTextContent("Medium"));
     });
   });
 

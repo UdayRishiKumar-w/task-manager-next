@@ -165,15 +165,18 @@ describe("DashboardTaskList", () => {
 
     it("status filter has all required options", async () => {
       const mocks = [createQueryMock(TasksPaginatedDocument, createMockResponse(mockTasks, 2), defaultVariables)];
-      render(<DashboardTaskList />, { mocks });
+      const { userEvent } = render(<DashboardTaskList />, { mocks });
 
       await waitFor(() => {
-        const statusFilter = screen.getByLabelText("Status:");
-        expect(statusFilter).toBeInTheDocument();
+        expect(screen.getByLabelText("Status:")).toBeInTheDocument();
+      });
 
-        const allOptions = screen.getAllByRole("option", { name: "All" });
-        expect(allOptions.length).toBe(2);
+      // Open the status combobox to reveal options
+      const statusTrigger = screen.getByLabelText("Status:");
+      await userEvent.click(statusTrigger);
 
+      await waitFor(() => {
+        expect(screen.getByRole("option", { name: "All" })).toBeInTheDocument();
         expect(screen.getByRole("option", { name: "Active" })).toBeInTheDocument();
         expect(screen.getByRole("option", { name: "Completed" })).toBeInTheDocument();
       });
