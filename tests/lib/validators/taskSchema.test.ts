@@ -1,4 +1,4 @@
-import { createTaskSchema, UpdateTaskSchema } from "./taskSchema";
+import { createTaskSchema, UpdateTaskSchema } from "@/lib/validators/taskSchema";
 
 describe("createTaskSchema", () => {
   describe("valid input acceptance", () => {

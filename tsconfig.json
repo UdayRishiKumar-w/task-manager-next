@@ -31,7 +31,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@tests/*": ["./tests/*"],
+      "@e2e/*": ["./e2e/*"]
     }
   },
   "include": [
@@ -40,20 +42,18 @@
     "src/**/*.tsx",
     "src/types/**/*.d.ts",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    "tests/**/*.ts",
+    "e2e/**/*.ts",
+    "tests/**/*.tsx"
   ],
   "exclude": [
     "node_modules",
-    "e2e",
-    "**/*.test.ts",
-    "**/*.test.tsx",
+    "coverage",
     "jest.setup.ts",
     "jest.config.ts",
     "playwright.config.ts",
     "codegen.ts",
-    "commitlint.config.ts",
-    "src/__mocks__/**/*",
-    "src/test-utils.tsx",
-    "src/test-utils/**/*"
+    "commitlint.config.ts"
   ]
 }

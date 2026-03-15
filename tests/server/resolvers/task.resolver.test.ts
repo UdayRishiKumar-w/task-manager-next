@@ -5,7 +5,7 @@ import {
   createMockTaskDocument,
   mockMongooseModel,
   mockMongooseQuery,
-} from "@/test-utils/backend";
+} from "@tests/test-utils/backend";
 import { Kind } from "graphql";
 
 jest.mock("mongoose", () => {
@@ -47,7 +47,7 @@ jest.mock("@/models/Task", () => ({
 }));
 
 import { Task } from "@/models/Task";
-import { taskResolvers } from "./task.resolver";
+import { taskResolvers } from "@/server/resolvers/task.resolver";
 
 const mockTask = mockMongooseModel();
 

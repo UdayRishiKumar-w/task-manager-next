@@ -29,8 +29,8 @@ const config: Config = {
     "src/lib/validators/**/*.{ts,tsx}",
     "src/lib/errors.ts",
     "!src/**/*.d.ts",
-    "!src/**/*.test.{ts,tsx}",
-    "!src/**/*.spec.{ts,tsx}",
+    "!tests/**/*.{ts,tsx}",
+    "!e2e/**/*.{ts,tsx}",
   ],
 
   // The directory where Jest should output its coverage files
@@ -113,6 +113,7 @@ const config: Config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
     "^@/components/(.*)$": "<rootDir>/src/components/$1",
+    "^@tests/(.*)$": "<rootDir>/tests/$1",
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -149,9 +150,7 @@ const config: Config = {
   // rootDir: undefined,
 
   // A list of paths to directories that Jest should use to search for files in
-  // roots: [
-  //   "<rootDir>"
-  // ],
+  roots: ["<rootDir>/tests"],
 
   // Allows you to use a custom runner instead of Jest's default test runner
   // runner: "jest-runner",
@@ -184,7 +183,7 @@ const config: Config = {
   // ],
 
   // Ignore e2e/playwright tests during unit test runs
-  testPathIgnorePatterns: ["<rootDir>/e2e/"],
+  testPathIgnorePatterns: ["<rootDir>/e2e/", "<rootDir>/node_modules/"],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [

@@ -56,7 +56,7 @@ function AllTheProviders({ children, mocks = [], session, store }: AllTheProvide
 function customRender(ui: ReactElement, options?: CustomRenderOptions): CustomRenderResult {
   const { mocks = [], session, store = makeStore(), ...renderOptions } = options || {};
 
-  const renderResult = render(ui, {
+  const utils = render(ui, {
     wrapper: ({ children }) => (
       <AllTheProviders mocks={mocks} session={session} store={store}>
         {children}
@@ -66,7 +66,7 @@ function customRender(ui: ReactElement, options?: CustomRenderOptions): CustomRe
   });
 
   return {
-    ...renderResult,
+    ...utils,
     store,
     userEvent: userEvent.setup(),
   };

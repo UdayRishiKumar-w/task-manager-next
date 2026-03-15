@@ -243,6 +243,7 @@ export function mockMongooseQuery(): MockMongooseQuery {
   query.lean.mockReturnValue(query);
   query.select.mockReturnValue(query);
   query.populate.mockReturnValue(query);
+  query.exec.mockResolvedValue(null);
 
   (query as unknown as { then: jest.Mock }).then = jest.fn((resolve) => {
     return query.exec().then(resolve);

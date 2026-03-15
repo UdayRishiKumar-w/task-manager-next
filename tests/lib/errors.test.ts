@@ -1,4 +1,4 @@
-import { GraphQLError } from "./errors";
+import { GraphQLError } from "@/lib/errors";
 
 describe("GraphQLError", () => {
   describe("error construction", () => {

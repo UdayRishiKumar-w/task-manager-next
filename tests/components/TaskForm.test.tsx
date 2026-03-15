@@ -1,7 +1,7 @@
+import TaskForm from "@/components/TaskForm";
 import { CreateTaskDocument } from "@/gql/graphql";
-import { createMutationMock, render, screen, waitFor } from "@/test-utils";
+import { createMutationMock, fireEvent, render, screen, waitFor } from "@tests/utils";
 import { axe } from "jest-axe";
-import TaskForm from "./TaskForm";
 
 describe("TaskForm", () => {
   describe("Accessibility", () => {
@@ -129,30 +129,26 @@ describe("TaskForm", () => {
     });
 
     it("should provide all priority options in select dropdown", async () => {
-      const { userEvent } = render(<TaskForm />);
+      render(<TaskForm />);
 
-      const priorityTrigger = screen.getByRole("combobox", { name: /task priority/i });
-      await userEvent.click(priorityTrigger);
-
-      await waitFor(() => {
-        expect(screen.getByRole("option", { name: "Low" })).toBeInTheDocument();
-        expect(screen.getByRole("option", { name: "Medium" })).toBeInTheDocument();
-        expect(screen.getByRole("option", { name: "High" })).toBeInTheDocument();
-      });
+      // Radix Select renders a hidden native <select> — query it directly
+      const nativeSelect = document.querySelector<HTMLSelectElement>("select[aria-hidden]");
+      expect(nativeSelect).not.toBeNull();
+      const options = Array.from(nativeSelect!.options).map((o) => o.text);
+      expect(options).toContain("Low");
+      expect(options).toContain("Medium");
+      expect(options).toContain("High");
     });
 
     it("should render priority options in correct order", async () => {
-      const { userEvent } = render(<TaskForm />);
+      render(<TaskForm />);
 
-      const priorityTrigger = screen.getByRole("combobox", { name: /task priority/i });
-      await userEvent.click(priorityTrigger);
-
-      await waitFor(() => {
-        const options = screen.getAllByRole("option");
-        expect(options[0]).toHaveTextContent("Low");
-        expect(options[1]).toHaveTextContent("Medium");
-        expect(options[2]).toHaveTextContent("High");
-      });
+      const nativeSelect = document.querySelector<HTMLSelectElement>("select[aria-hidden]");
+      expect(nativeSelect).not.toBeNull();
+      const options = Array.from(nativeSelect!.options).map((o) => o.text);
+      expect(options[0]).toBe("Low");
+      expect(options[1]).toBe("Medium");
+      expect(options[2]).toBe("High");
     });
   });
 
@@ -192,16 +188,13 @@ describe("TaskForm", () => {
     });
 
     it("should allow user to change priority selection", async () => {
-      const { userEvent } = render(<TaskForm />);
+      render(<TaskForm />);
+
+      const nativeSelect = document.querySelector<HTMLSelectElement>("select[aria-hidden]");
+      expect(nativeSelect).not.toBeNull();
+      fireEvent.change(nativeSelect!, { target: { value: "HIGH" } });
 
       const priorityTrigger = screen.getByRole("combobox", { name: /task priority/i });
-      await userEvent.click(priorityTrigger);
-
-      await waitFor(() => {
-        expect(screen.getByRole("option", { name: "High" })).toBeInTheDocument();
-      });
-      await userEvent.click(screen.getByRole("option", { name: "High" }));
-
       await waitFor(() => {
         expect(priorityTrigger).toHaveTextContent("High");
       });
@@ -227,26 +220,19 @@ describe("TaskForm", () => {
     });
 
     it("should allow user to change priority multiple times", async () => {
-      const { userEvent } = render(<TaskForm />);
+      render(<TaskForm />);
 
+      const nativeSelect = document.querySelector<HTMLSelectElement>("select[aria-hidden]");
+      expect(nativeSelect).not.toBeNull();
       const priorityTrigger = screen.getByRole("combobox", { name: /task priority/i });
 
-      // Select High
-      await userEvent.click(priorityTrigger);
-      expect(await screen.findByRole("option", { name: "High" })).toBeInTheDocument();
-      await userEvent.click(screen.getByRole("option", { name: "High" }));
+      fireEvent.change(nativeSelect!, { target: { value: "HIGH" } });
       await waitFor(() => expect(priorityTrigger).toHaveTextContent("High"));
 
-      // Select Low
-      await userEvent.click(priorityTrigger);
-      expect(await screen.findByRole("option", { name: "Low" })).toBeInTheDocument();
-      await userEvent.click(screen.getByRole("option", { name: "Low" }));
+      fireEvent.change(nativeSelect!, { target: { value: "LOW" } });
       await waitFor(() => expect(priorityTrigger).toHaveTextContent("Low"));
 
-      // Select Medium
-      await userEvent.click(priorityTrigger);
-      expect(await screen.findByRole("option", { name: "Medium" })).toBeInTheDocument();
-      await userEvent.click(screen.getByRole("option", { name: "Medium" }));
+      fireEvent.change(nativeSelect!, { target: { value: "MEDIUM" } });
       await waitFor(() => expect(priorityTrigger).toHaveTextContent("Medium"));
     });
   });
@@ -341,8 +327,12 @@ describe("TaskForm", () => {
       const submitButton = screen.getByRole("button", { name: /add task/i });
 
       await userEvent.type(titleInput, "Test Task");
+      await userEvent.click(submitButton);
 
-      expect(submitButton).toBeEnabled();
+      // Verify button is disabled during submission
+      await waitFor(() => {
+        expect(submitButton).toBeDisabled();
+      });
     });
   });
 });

@@ -1,4 +1,4 @@
-import { loginSchema } from "./auth";
+import { loginSchema } from "@/lib/validators/auth";
 
 describe("loginSchema", () => {
   describe("valid input acceptance", () => {
