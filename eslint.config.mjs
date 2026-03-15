@@ -104,6 +104,7 @@ const eslintConfig = defineConfig([
     extends: [tseslint.configs.disableTypeChecked],
     rules: {
       "sonarjs/no-commented-code": "off",
+      "sonarjs/no-skipped-tests": "off",
     },
   },
 

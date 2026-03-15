@@ -1,5 +1,9 @@
-import { createMockAuthenticatedContext, createMockGraphQLContext, createMockTaskDocument } from "@/test-utils/backend";
-import { userResolvers } from "./user.resolver";
+import { userResolvers } from "@/server/resolvers/user.resolver";
+import {
+  createMockAuthenticatedContext,
+  createMockGraphQLContext,
+  createMockTaskDocument,
+} from "@tests/test-utils/backend";
 
 jest.mock("mongoose", () => {
   const mockObjectId = jest.fn().mockImplementation((id?: string) => ({

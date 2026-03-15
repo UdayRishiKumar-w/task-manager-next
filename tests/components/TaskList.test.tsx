@@ -1,8 +1,8 @@
+import TaskList from "@/components/TaskList";
 import { GetTasksDocument } from "@/gql/graphql";
-import { createErrorMock, createQueryMock, render, screen, waitFor } from "@/test-utils";
+import { createErrorMock, createQueryMock, render, screen, waitFor } from "@tests/utils";
 import { GraphQLError } from "graphql";
 import { axe } from "jest-axe";
-import TaskList from "./TaskList";
 
 describe("TaskList", () => {
   const mockTasks = [
@@ -57,7 +57,7 @@ describe("TaskList", () => {
 
       await waitFor(() => {
         const checkboxes = screen.getAllByRole("checkbox");
-        checkboxes.forEach((checkbox) => {
+        checkboxes.forEach((checkbox: HTMLElement) => {
           expect(checkbox).toHaveAccessibleName();
         });
       });
@@ -70,7 +70,7 @@ describe("TaskList", () => {
       await waitFor(() => {
         const deleteButtons = screen.getAllByRole("button", { name: /delete/i });
         expect(deleteButtons.length).toBe(mockTasks.length);
-        deleteButtons.forEach((button) => {
+        deleteButtons.forEach((button: HTMLElement) => {
           expect(button).toHaveAccessibleName();
         });
       });
@@ -259,7 +259,7 @@ describe("TaskList", () => {
 
       await waitFor(() => {
         expect(screen.getByText("Delete task")).toBeInTheDocument();
-        expect(screen.getByText(/Are you sure you want to delete this task/)).toBeInTheDocument();
+        expect(screen.getByText(/This action cannot be undone/)).toBeInTheDocument();
       });
     });
 

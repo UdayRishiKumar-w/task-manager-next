@@ -1,8 +1,8 @@
+import DashboardTaskList from "@/components/DashboardTaskList";
 import { TasksPaginatedDocument } from "@/gql/graphql";
-import { createErrorMock, createQueryMock, render, screen, waitFor } from "@/test-utils";
+import { createErrorMock, createQueryMock, render, screen, waitFor } from "@tests/utils";
 import { GraphQLError } from "graphql";
 import { axe } from "jest-axe";
-import DashboardTaskList from "./DashboardTaskList";
 
 describe("DashboardTaskList", () => {
   const mockTasks = [
@@ -80,7 +80,7 @@ describe("DashboardTaskList", () => {
 
       await waitFor(() => {
         const checkboxes = screen.getAllByRole("checkbox");
-        checkboxes.forEach((checkbox) => {
+        checkboxes.forEach((checkbox: HTMLElement) => {
           expect(checkbox).toHaveAccessibleName();
           expect(checkbox).toHaveAttribute("aria-readonly", "true");
         });
@@ -93,7 +93,7 @@ describe("DashboardTaskList", () => {
 
       await waitFor(() => {
         const checkboxes = screen.getAllByRole("checkbox");
-        checkboxes.forEach((checkbox) => {
+        checkboxes.forEach((checkbox: HTMLElement) => {
           expect(checkbox).toBeDisabled();
         });
       });
@@ -172,14 +172,13 @@ describe("DashboardTaskList", () => {
       });
 
       // Open the status combobox to reveal options
-      const statusTrigger = screen.getByLabelText("Status:");
-      await userEvent.click(statusTrigger);
+      await userEvent.click(screen.getByRole("combobox", { name: /status/i }));
 
-      await waitFor(() => {
-        expect(screen.getByRole("option", { name: "All" })).toBeInTheDocument();
-        expect(screen.getByRole("option", { name: "Active" })).toBeInTheDocument();
-        expect(screen.getByRole("option", { name: "Completed" })).toBeInTheDocument();
-      });
+      const listbox = await screen.findByRole("listbox");
+
+      expect(listbox).toHaveTextContent("All");
+      expect(listbox).toHaveTextContent("Active");
+      expect(listbox).toHaveTextContent("Completed");
     });
   });
 

@@ -23,16 +23,21 @@
     "jsx": "react-jsx",
 
     // Disable noEmit since ts-jest needs to transform files
-    "noEmit": false
+    "noEmit": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@tests/*": ["./tests/*"]
+    }
   },
   "include": [
     "jest.setup.ts",
     "jest.config.ts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/types/**/*.d.ts",
-    "**/*.test.ts",
-    "**/*.test.tsx"
+    "src/types/**/*.d.ts"
   ],
   "exclude": ["node_modules", ".next", "coverage", "e2e"]
 }

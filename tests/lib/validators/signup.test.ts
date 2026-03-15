@@ -1,4 +1,4 @@
-import { signupSchema } from "./signup";
+import { signupSchema } from "@/lib/validators/signup";
 
 describe("signupSchema", () => {
   describe("valid input acceptance", () => {
