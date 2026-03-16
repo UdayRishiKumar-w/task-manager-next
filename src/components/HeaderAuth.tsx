@@ -1,10 +1,13 @@
 "use client";
 
+import clsx from "clsx";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function HeaderAuth() {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   if (status === "loading") {
     return (
@@ -39,14 +42,24 @@ export default function HeaderAuth() {
     <nav className="flex items-center gap-2 sm:gap-3" aria-label="User navigation">
       <Link
         href="/dashboard"
-        className="cursor-pointer text-xs font-medium text-gray-800 transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none sm:text-sm dark:text-gray-200 dark:hover:text-blue-400"
+        className={clsx(
+          "cursor-pointer text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none sm:text-sm",
+          pathname === "/dashboard"
+            ? "text-blue-700 underline dark:text-blue-400"
+            : "text-gray-800 hover:text-blue-700 hover:underline dark:text-gray-200 dark:hover:text-blue-400",
+        )}
         aria-label="Go to dashboard"
       >
         Dashboard
       </Link>
       <Link
         href="/tasks"
-        className="cursor-pointer text-xs font-medium text-gray-800 transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none sm:inline sm:text-sm dark:text-gray-200 dark:hover:text-blue-400"
+        className={clsx(
+          "cursor-pointer text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none sm:text-sm",
+          pathname === "/tasks"
+            ? "text-blue-700 underline dark:text-blue-400"
+            : "text-gray-800 hover:text-blue-700 hover:underline dark:text-gray-200 dark:hover:text-blue-400",
+        )}
         aria-label="Go to tasks"
       >
         Tasks

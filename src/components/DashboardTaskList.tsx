@@ -41,37 +41,41 @@ export default function DashboardTaskList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <Label htmlFor="status-filter">Status:</Label>
-        <Select
-          value={statusFilter}
-          onValueChange={(v) => dispatch(setStatusFilter(v as "ALL" | "ACTIVE" | "COMPLETED"))}
-        >
-          <SelectTrigger id="status-filter" className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All</SelectItem>
-            <SelectItem value="ACTIVE">Active</SelectItem>
-            <SelectItem value="COMPLETED">Completed</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+        <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
+          <Label htmlFor="status-filter">Status:</Label>
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => dispatch(setStatusFilter(v as "ALL" | "ACTIVE" | "COMPLETED"))}
+          >
+            <SelectTrigger id="status-filter" className="w-full min-w-40 sm:w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All</SelectItem>
+              <SelectItem value="ACTIVE">Active</SelectItem>
+              <SelectItem value="COMPLETED">Completed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        <Label htmlFor="priority-filter">Priority:</Label>
-        <Select
-          value={priorityFilter ?? "ALL"}
-          onValueChange={(v) => dispatch(setPriorityFilter(v as "ALL" | Priority))}
-        >
-          <SelectTrigger id="priority-filter" className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All</SelectItem>
-            <SelectItem value="HIGH">High</SelectItem>
-            <SelectItem value="MEDIUM">Medium</SelectItem>
-            <SelectItem value="LOW">Low</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex w-full flex-col gap-1 sm:w-auto sm:flex-row sm:items-center sm:gap-2">
+          <Label htmlFor="priority-filter">Priority:</Label>
+          <Select
+            value={priorityFilter ?? "ALL"}
+            onValueChange={(v) => dispatch(setPriorityFilter(v as "ALL" | Priority))}
+          >
+            <SelectTrigger id="priority-filter" className="w-full min-w-40 sm:w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All</SelectItem>
+              <SelectItem value="HIGH">High</SelectItem>
+              <SelectItem value="MEDIUM">Medium</SelectItem>
+              <SelectItem value="LOW">Low</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <TaskListShell loading={loading && !data} error={error} tasks={tasks} />
