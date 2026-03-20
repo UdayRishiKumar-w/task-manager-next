@@ -8,7 +8,7 @@
 
 ---
 
-A full-stack productivity application built with Next.js (app router), TypeScript, GraphQL (Apollo Server), MongoDB (Mongoose), and NextAuth (credentials + GitHub), Apollo Client, shadcn UI, react-hook-form, and Zod. This project demonstrates modern web development practices, clean architecture, secure authentication, and fully typed end-to-end development.
+A full-stack productivity application built with Next.js (app router), TypeScript, GraphQL (Apollo Server), MongoDB (Mongoose), and NextAuth (credentials + GitHub), Apollo Client, shadcn UI, Redux toolkit, react-hook-form, and Zod. This project demonstrates modern web development practices, clean architecture, secure authentication, and fully typed end-to-end development.
 
 ## Tech Stack
 
@@ -19,6 +19,8 @@ A full-stack productivity application built with Next.js (app router), TypeScrip
 - Apollo Client
 - DataLoader
 - NextAuth
+- Redux Toolkit
+- React hook form
 - Zod
 
 ## Features
