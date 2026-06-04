@@ -56,7 +56,7 @@ export function createMockGraphQLContext(overrides?: Partial<GraphQLContext>): G
     clearAll: jest.fn().mockReturnThis(),
     prime: jest.fn().mockReturnThis(),
     name: "userLoader",
-  } as unknown as DataLoader<string, UserDocument>;
+  };
 
   const defaultContext: GraphQLContext = {
     session: null,
@@ -224,6 +224,7 @@ export interface MockMongooseQuery {
   select: jest.Mock;
   populate: jest.Mock;
   exec: jest.Mock;
+  then: jest.Mock;
 }
 
 export function mockMongooseQuery(): MockMongooseQuery {
@@ -235,6 +236,7 @@ export function mockMongooseQuery(): MockMongooseQuery {
     select: jest.fn(),
     populate: jest.fn(),
     exec: jest.fn(),
+    then: jest.fn(),
   };
 
   query.sort.mockReturnValue(query);
@@ -245,7 +247,7 @@ export function mockMongooseQuery(): MockMongooseQuery {
   query.populate.mockReturnValue(query);
   query.exec.mockResolvedValue(null);
 
-  (query as unknown as { then: jest.Mock }).then = jest.fn((resolve) => {
+  query.then.mockImplementation((resolve) => {
     return query.exec().then(resolve);
   });
 

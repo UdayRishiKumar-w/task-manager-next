@@ -22,7 +22,7 @@ jest.mock("mongoose", () => {
     return schema;
   });
 
-  (SchemaConstructor as unknown as { Types: { ObjectId: jest.Mock } }).Types = { ObjectId: mockObjectId };
+  Object.assign(SchemaConstructor, { Types: { ObjectId: mockObjectId } });
 
   return {
     Schema: SchemaConstructor,
