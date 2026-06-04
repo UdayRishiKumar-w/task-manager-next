@@ -1,8 +1,10 @@
+import type { UserResolverParent } from "@/models/User";
 import { userResolvers } from "@/server/resolvers/user.resolver";
 import {
   createMockAuthenticatedContext,
   createMockGraphQLContext,
   createMockTaskDocument,
+  mockMongooseQuery,
 } from "@tests/test-utils/backend";
 
 jest.mock("mongoose", () => {
@@ -41,6 +43,18 @@ jest.mock("@/models/Task", () => ({
 
 import { Task } from "@/models/Task";
 
+function createUserParent(id = "user-1"): UserResolverParent {
+  return {
+    _id: id,
+    id,
+    name: "Test User",
+    email: "test@example.com",
+    createdAt: new Date("2024-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+    tasks: [],
+  };
+}
+
 describe("User Field Resolvers", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -49,37 +63,30 @@ describe("User Field Resolvers", () => {
   describe("User.tasks", () => {
     it("returns tasks for authenticated user viewing their own profile", async () => {
       const ctx = createMockAuthenticatedContext("user-1");
-      const parent = { id: "user-1" };
+      const parent = createUserParent("user-1");
       const mockTasks = [
         createMockTaskDocument({ id: "1", title: "Task 1", userId: "user-1" }),
         createMockTaskDocument({ id: "2", title: "Task 2", userId: "user-1" }),
       ];
 
-      const mockQuery = {
-        sort: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue(mockTasks),
-
-        then: jest.fn((resolve) => resolve(mockTasks)) as never,
-      };
+      const mockQuery = mockMongooseQuery();
+      mockQuery.exec.mockResolvedValue(mockTasks);
       (Task.find as jest.Mock).mockReturnValue(mockQuery);
 
       const result = await userResolvers.User.tasks(parent, {}, ctx);
 
-      expect(Task.find).toHaveBeenCalledWith({ userId: "user-1" }, {}, { virtuals: true, lean: true });
+      expect(Task.find).toHaveBeenCalledWith({ userId: "user-1" });
       expect(mockQuery.sort).toHaveBeenCalledWith({ createdAt: -1 });
+      expect(mockQuery.lean).toHaveBeenCalledWith({ virtuals: true });
       expect(result).toEqual(mockTasks);
     });
 
     it("returns empty array when user has no tasks", async () => {
       const ctx = createMockAuthenticatedContext("user-1");
-      const parent = { id: "user-1" };
+      const parent = createUserParent("user-1");
 
-      const mockQuery = {
-        sort: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue([]),
-
-        then: jest.fn((resolve) => resolve([])) as never,
-      };
+      const mockQuery = mockMongooseQuery();
+      mockQuery.exec.mockResolvedValue([]);
       (Task.find as jest.Mock).mockReturnValue(mockQuery);
 
       const result = await userResolvers.User.tasks(parent, {}, ctx);
@@ -89,7 +96,7 @@ describe("User Field Resolvers", () => {
 
     it("throws Unauthorized error when user is not authenticated", async () => {
       const ctx = createMockGraphQLContext();
-      const parent = { id: "user-1" };
+      const parent = createUserParent("user-1");
 
       expect(() => userResolvers.User.tasks(parent, {}, ctx)).toThrow("Unauthorized");
       expect(Task.find).not.toHaveBeenCalled();
@@ -97,7 +104,7 @@ describe("User Field Resolvers", () => {
 
     it("throws Unauthorized error when user tries to view another user's tasks", async () => {
       const ctx = createMockAuthenticatedContext("user-1");
-      const parent = { id: "user-2" };
+      const parent = createUserParent("user-2");
 
       expect(() => userResolvers.User.tasks(parent, {}, ctx)).toThrow("Unauthorized");
       expect(Task.find).not.toHaveBeenCalled();
@@ -105,14 +112,10 @@ describe("User Field Resolvers", () => {
 
     it("sorts tasks by createdAt in descending order", async () => {
       const ctx = createMockAuthenticatedContext("user-1");
-      const parent = { id: "user-1" };
+      const parent = createUserParent("user-1");
 
-      const mockQuery = {
-        sort: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue([]),
-
-        then: jest.fn((resolve) => resolve([])) as never,
-      };
+      const mockQuery = mockMongooseQuery();
+      mockQuery.exec.mockResolvedValue([]);
       (Task.find as jest.Mock).mockReturnValue(mockQuery);
 
       await userResolvers.User.tasks(parent, {}, ctx);

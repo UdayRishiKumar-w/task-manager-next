@@ -25,8 +25,7 @@ function createApolloClient() {
           keyFields: ["id"],
           fields: {
             user: {
-              merge(existing, incoming) {
-                // Prevent overwriting full user with undefined
+              merge(existing: unknown, incoming: unknown) {
                 return incoming ?? existing;
               },
             },

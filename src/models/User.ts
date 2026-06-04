@@ -1,4 +1,4 @@
-import { Schema, model, models, type HydratedDocument, type InferSchemaType, type Model } from "mongoose";
+import { Schema, Types, model, models, type HydratedDocument, type InferSchemaType, type Model } from "mongoose";
 import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 
 const UserSchema = new Schema(
@@ -29,3 +29,10 @@ UserSchema.plugin(mongooseLeanVirtuals);
 export type UserSchemaType = InferSchemaType<typeof UserSchema>;
 export const User: Model<UserSchemaType> = models.User ?? model("User", UserSchema);
 export type UserDocument = HydratedDocument<UserSchemaType>;
+export type UserResolverParent =
+  | UserDocument
+  | (Omit<UserSchemaType, "tasks"> & {
+      _id: Types.ObjectId | string;
+      id?: string;
+      tasks?: Array<Types.ObjectId | string>;
+    });

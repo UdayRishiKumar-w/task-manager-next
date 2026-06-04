@@ -36,6 +36,7 @@ const eslintConfig = defineConfig([
     "coverage/**",
     "src/graphql/generated/**",
     "src/gql/**",
+    "src/components/ui/**",
   ]),
 
   // Disable type-checked rules for JS/MJS files
@@ -69,12 +70,13 @@ const eslintConfig = defineConfig([
       "unused-imports/no-unused-imports": "error",
       "unused-imports/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
 
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-return": "off",
-      "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-member-access": "error",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: { attributes: false } }],
+      "@typescript-eslint/no-deprecated": "error",
 
       "security/detect-object-injection": "off",
       "sonarjs/cognitive-complexity": ["warn", 15],
@@ -149,7 +151,7 @@ const eslintConfig = defineConfig([
 
   // Jest + Testing Library
   {
-    files: ["**/*.test.{ts,tsx}", "tests/**/*.{ts,tsx}", "src/__mocks__/**/*.{ts,tsx}"],
+    files: ["**/*.test.{ts,tsx}", "tests/**/*.{ts,tsx}"],
 
     plugins: {
       jest: eslintJest,

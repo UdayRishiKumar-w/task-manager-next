@@ -1,10 +1,23 @@
-import type { CreateTaskInput } from "@/gql/graphql";
 import type { GraphQLContext } from "@/graphql/context";
 import { GraphQLError } from "@/lib/errors";
-import type { TaskDocument, TaskSchemaType } from "@/models/Task";
+import type { TaskResolverParent, TaskSchemaType } from "@/models/Task";
 import { Task } from "@/models/Task";
+import type { Resolvers } from "@/server/generated/server";
 import { GraphQLScalarType, Kind } from "graphql";
 import { Types } from "mongoose";
+
+function requireUserId(ctx: GraphQLContext): string {
+  if (!ctx.userId) throw new GraphQLError("Unauthorized");
+  return ctx.userId;
+}
+
+function taskId(task: TaskResolverParent): string {
+  return task.id ?? task._id.toString();
+}
+
+function taskCreatedAt(task: TaskResolverParent): Date {
+  return task.createdAt ?? new Date(0);
+}
 
 export const taskResolvers = {
   DateTime: new GraphQLScalarType({
@@ -32,47 +45,39 @@ export const taskResolvers = {
     },
   }),
   Query: {
-    getTasks: async (_: unknown, __: unknown, ctx: GraphQLContext) => {
-      if (!ctx.userId) throw new GraphQLError("Unauthorized");
-      const tasks = await Task.find({ userId: ctx.userId })
+    getTasks: async (_parent, _args, ctx) => {
+      const userId = requireUserId(ctx);
+
+      return Task.find({ userId })
         .sort({
           createdAt: -1,
         })
-        .lean();
-      const count = tasks?.length;
-      console.info("Fetched tasks for user:", ctx.userId, "count:", count);
-
-      return tasks;
+        .lean<TaskResolverParent[]>({ virtuals: true });
     },
-    getTask: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
-      if (!ctx.userId) throw new GraphQLError("Unauthorized");
+    getTask: async (_parent, { id }, ctx) => {
+      const userId = requireUserId(ctx);
 
-      return await Task.findOne({ _id: id, userId: ctx.userId }, {}, { virtuals: true }).lean();
+      return Task.findOne({ _id: id, userId }, {}, { virtuals: true }).lean<TaskResolverParent>();
     },
 
-    tasksPaginated: async (
-      _: unknown,
-      {
-        limit,
-        offset,
-        filter,
-      }: {
-        limit: number;
-        offset: number;
-        filter?: { completed?: boolean; priority?: string };
-      },
-      ctx: GraphQLContext,
-    ) => {
-      if (!ctx.userId) throw new GraphQLError("Unauthorized");
+    tasksPaginated: async (_parent, { limit, offset, filter }, ctx) => {
+      const userId = requireUserId(ctx);
 
-      const query = {
-        userId: ctx.userId,
-        ...(filter?.completed !== undefined && { completed: filter.completed }),
-        ...(filter?.priority !== undefined && { priority: filter.priority }),
+      const query: Partial<Pick<TaskSchemaType, "completed" | "priority">> & { userId: string } = {
+        userId,
       };
 
+      if (filter?.completed !== undefined && filter.completed !== null) {
+        query.completed = filter.completed;
+      }
+      if (filter?.priority !== undefined && filter.priority !== null) {
+        query.priority = filter.priority;
+      }
+
       const [items, totalCount] = await Promise.all([
-        Task.find(query).skip(offset).limit(limit).sort({ createdAt: -1 }).lean({ virtuals: true }),
+        Task.find(query).skip(offset).limit(limit).sort({ createdAt: -1 }).lean<TaskResolverParent[]>({
+          virtuals: true,
+        }),
         Task.countDocuments(query),
       ]);
 
@@ -81,21 +86,20 @@ export const taskResolvers = {
   },
 
   Mutation: {
-    createTask: async (_: unknown, { input }: { input: CreateTaskInput }, ctx: GraphQLContext) => {
-      if (!ctx.userId) throw new GraphQLError("Unauthorized");
+    createTask: async (_parent, { input }, ctx) => {
+      const userId = requireUserId(ctx);
 
       const payload: Partial<TaskSchemaType> & { dueDate?: Date } = {
         title: input.title,
         priority: input.priority,
-        userId: new Types.ObjectId(ctx.userId),
+        userId: new Types.ObjectId(userId),
       };
 
       if (input.description !== undefined) {
         payload.description = input.description ?? null;
       }
       if (input.dueDate !== undefined && input.dueDate !== null) {
-        const d = input.dueDate as unknown;
-        payload.dueDate = d instanceof Date ? d : new Date(d as string | number);
+        payload.dueDate = input.dueDate;
       }
       if (input.completed !== undefined && input.completed !== null) {
         payload.completed = input.completed;
@@ -106,51 +110,39 @@ export const taskResolvers = {
 
       return Task.create(payload);
     },
-    updateTask: async (
-      _: unknown,
-      {
-        input,
-      }: {
-        input: {
-          id: string;
-          title?: string;
-          completed?: boolean;
-          description?: string;
-          priority?: string;
-          dueDate?: string;
-          started?: boolean;
-        };
-      },
-      ctx: GraphQLContext,
-    ) => {
-      if (!ctx.userId) throw new GraphQLError("Unauthorized");
+    updateTask: async (_parent, { input }, ctx) => {
+      const userId = requireUserId(ctx);
 
       const update: Partial<TaskSchemaType> & { dueDate?: Date } = {};
-      if (input.title !== undefined) update.title = input.title;
-      if (input.completed !== undefined) update.completed = input.completed;
-      if (input.started !== undefined) update.started = input.started;
+      if (input.title !== undefined && input.title !== null) update.title = input.title;
+      if (input.completed !== undefined && input.completed !== null) update.completed = input.completed;
+      if (input.started !== undefined && input.started !== null) update.started = input.started;
       if (input.description !== undefined) update.description = input.description;
-      if (input.priority !== undefined) update.priority = input.priority as TaskSchemaType["priority"];
+      if (input.priority !== undefined && input.priority !== null) update.priority = input.priority;
       if (input.dueDate !== undefined && input.dueDate !== null) {
-        const d = input.dueDate as unknown;
-        update.dueDate = d instanceof Date ? d : new Date(d as string | number);
+        update.dueDate = input.dueDate;
       }
 
-      const updated = await Task.findOneAndUpdate({ _id: input.id, userId: ctx.userId }, update, { new: true }).lean({
+      const updated = await Task.findOneAndUpdate({ _id: input.id, userId }, update, {
+        new: true,
+      }).lean<TaskResolverParent>({
         virtuals: true,
       });
+
+      if (!updated) throw new GraphQLError("Task not found");
+
       return updated;
     },
-    deleteTask: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
-      if (!ctx.userId) throw new GraphQLError("Unauthorized");
+    deleteTask: async (_parent, { id }, ctx) => {
+      const userId = requireUserId(ctx);
 
-      const res = await Task.findOneAndDelete({ _id: id, userId: ctx.userId }).lean();
+      const res = await Task.findOneAndDelete({ _id: id, userId }).lean();
       return !!res;
     },
-    toggleTaskCompleted: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
-      if (!ctx.userId) throw new GraphQLError("Unauthorized");
+    toggleTaskCompleted: async (_parent, { id }, ctx) => {
+      const userId = requireUserId(ctx);
 
-      const task = await Task.findOne({ _id: id, userId: ctx.userId });
+      const task = await Task.findOne({ _id: id, userId });
       if (!task) throw new GraphQLError("Task not found");
 
       task.completed = !task.completed;
@@ -163,10 +155,10 @@ export const taskResolvers = {
 
       return task;
     },
-    toggleTaskStarted: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
-      if (!ctx.userId) throw new GraphQLError("Unauthorized");
+    toggleTaskStarted: async (_parent, { id }, ctx) => {
+      const userId = requireUserId(ctx);
 
-      const task = await Task.findOne({ _id: id, userId: ctx.userId });
+      const task = await Task.findOne({ _id: id, userId });
       if (!task) throw new GraphQLError("Task not found");
       if (task.completed) throw new GraphQLError("Cannot change started status of a completed task");
 
@@ -178,8 +170,8 @@ export const taskResolvers = {
   },
 
   Task: {
-    user: (parent: { userId: string }, _: unknown, ctx: GraphQLContext) =>
-      ctx.loaders.user.load(parent?.userId?.toString()),
-    id: (task: TaskDocument) => task.id ?? task._id.toString(),
+    user: (parent, _args, ctx) => ctx.loaders.user.load(parent.userId.toString()),
+    id: (task) => taskId(task),
+    createdAt: (task) => taskCreatedAt(task),
   },
-};
+} satisfies Pick<Resolvers, "DateTime" | "Mutation" | "Query" | "Task">;

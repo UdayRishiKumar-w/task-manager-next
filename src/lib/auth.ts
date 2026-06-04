@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
 
         await connectDB();
 
-        const { email, password, name } = credentials as { email: string; password: string; name?: string };
+        const { email, password, name } = credentials;
 
         const existing = await User.findOne({ email }).select("+password").exec();
 
@@ -140,9 +140,9 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
-    session({ session, token }: { session: Session; token: JWT }) {
-      if (session.user) {
-        session.user.id = token.id as string;
+    session({ session, token }: { session: Session; token: JWT }): Session {
+      if (token.id && session.user) {
+        session.user.id = token.id;
       }
       return session;
     },

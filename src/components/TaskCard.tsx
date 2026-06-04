@@ -4,18 +4,37 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { TaskFullFieldsFragment } from "@/gql/graphql";
+import type { Priority, TaskFullFieldsFragment } from "@/gql/graphql";
 import clsx from "clsx";
 
-export function getPriorityVariant(priority: string): "destructive" | "secondary" | "default" {
+export function getPriorityVariant(priority: Priority): "destructive" | "secondary" | "default" {
   if (priority === "HIGH") return "destructive";
   if (priority === "LOW") return "secondary";
   return "default";
 }
 
-function DueDate({ dueDate, completed }: Readonly<{ dueDate: Date | null | undefined; completed: boolean }>) {
-  if (!dueDate) return null;
-  const due = new Date(dueDate as unknown as string);
+type TaskDateValue = Date | number | string | null | undefined;
+
+function toDate(value: TaskDateValue): Date | null {
+  if (!value) return null;
+
+  let date: Date;
+
+  if (value instanceof Date) {
+    date = value;
+  } else if (typeof value === "string" && /^\d+$/.test(value)) {
+    date = new Date(Number(value));
+  } else {
+    date = new Date(value);
+  }
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function DueDate({ dueDate, completed }: Readonly<{ dueDate: TaskDateValue; completed: boolean }>) {
+  const due = toDate(dueDate);
+  if (!due) return null;
+
   const isOverdue = !completed && due < new Date();
   return (
     <time
@@ -57,8 +76,7 @@ export function TaskCard({
   onToggleStarted,
   onDelete,
 }: Readonly<TaskCardProps>) {
-  const createdAtNum = Number(task.createdAt);
-  const isValidDate = task.createdAt && !Number.isNaN(createdAtNum);
+  const createdAt = toDate(task.createdAt);
 
   const completedLabel = getCheckboxLabel(task.title, task.completed, interactive, "incomplete", "complete");
   const startedLabel = getCheckboxLabel(task.title, !!task.started, interactive, "not started", "started");
@@ -93,9 +111,9 @@ export function TaskCard({
                   {task.priority}
                 </Badge>
               )}
-              {isValidDate && (
-                <time dateTime={new Date(createdAtNum).toISOString()}>
-                  Created {new Date(createdAtNum).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+              {createdAt && (
+                <time dateTime={createdAt.toISOString()}>
+                  Created {createdAt.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
                 </time>
               )}
               <DueDate dueDate={task.dueDate} completed={task.completed} />
@@ -131,7 +149,7 @@ export function TaskCard({
             <Button
               variant="ghost"
               size="sm"
-              className="text-red-700 hover:bg-red-50 hover:text-red-800 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-300"
+              className="cursor-pointer text-red-700 hover:bg-red-50 hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-300"
               onClick={() => onDelete(task.id)}
               disabled={loading}
               aria-label={`Delete task "${task.title}"`}

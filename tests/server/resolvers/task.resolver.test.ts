@@ -1,4 +1,3 @@
-import { Priority } from "@/gql/graphql";
 import {
   createMockAuthenticatedContext,
   createMockGraphQLContext,
@@ -218,7 +217,7 @@ describe("Task Mutation Resolvers", () => {
       const ctx = createMockAuthenticatedContext("user-1");
       const input = {
         title: "New Task",
-        priority: Priority.Medium,
+        priority: "MEDIUM" as const,
       };
       const createdTask = createMockTaskDocument({ id: "new-1", title: "New Task", userId: "user-1" });
 
@@ -229,7 +228,7 @@ describe("Task Mutation Resolvers", () => {
       expect(mockTask.create).toHaveBeenCalledWith(
         expect.objectContaining({
           title: "New Task",
-          priority: Priority.Medium,
+          priority: "MEDIUM",
         }),
       );
       expect(result).toEqual(createdTask);
@@ -239,7 +238,7 @@ describe("Task Mutation Resolvers", () => {
       const ctx = createMockAuthenticatedContext("user-1");
       const input = {
         title: "Complete Task",
-        priority: Priority.High,
+        priority: "HIGH" as const,
         description: "Task description",
         dueDate: new Date("2024-12-31"),
         completed: true,
@@ -260,7 +259,7 @@ describe("Task Mutation Resolvers", () => {
       expect(mockTask.create).toHaveBeenCalledWith(
         expect.objectContaining({
           title: "Complete Task",
-          priority: Priority.High,
+          priority: "HIGH",
           description: "Task description",
           completed: true,
           started: true,
@@ -273,7 +272,7 @@ describe("Task Mutation Resolvers", () => {
       const ctx = createMockGraphQLContext();
       const input = {
         title: "New Task",
-        priority: Priority.Medium,
+        priority: "MEDIUM" as const,
       };
 
       await expect(taskResolvers.Mutation.createTask({}, { input }, ctx)).rejects.toThrow("Unauthorized");
@@ -305,7 +304,7 @@ describe("Task Mutation Resolvers", () => {
       expect(result).toEqual(updatedTask);
     });
 
-    it("returns null when task not found", async () => {
+    it("throws when task is not found", async () => {
       const ctx = createMockAuthenticatedContext("user-1");
       const input = {
         id: "nonexistent",
@@ -316,9 +315,7 @@ describe("Task Mutation Resolvers", () => {
       mockQuery.exec.mockResolvedValue(null);
       mockTask.findOneAndUpdate.mockReturnValue(mockQuery);
 
-      const result = await taskResolvers.Mutation.updateTask({}, { input }, ctx);
-
-      expect(result).toBeNull();
+      await expect(taskResolvers.Mutation.updateTask({}, { input }, ctx)).rejects.toThrow("Task not found");
     });
 
     it("throws Unauthorized error when user is not authenticated", async () => {
@@ -514,7 +511,7 @@ describe("Task Field Resolvers", () => {
   describe("Task.user", () => {
     it("loads user using dataloader", async () => {
       const ctx = createMockAuthenticatedContext("user-1");
-      const parent = { userId: "user-123" };
+      const parent = createMockTaskDocument({ userId: "user-123" });
 
       await taskResolvers.Task.user(parent, {}, ctx);
 

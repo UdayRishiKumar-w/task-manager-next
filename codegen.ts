@@ -18,6 +18,8 @@ const config: CodegenConfig = {
       plugins: ["typescript", "typescript-resolvers"],
       config: {
         contextType: "@/graphql/context#GraphQLContext",
+        enumsAsTypes: true,
+        strictScalars: true,
         useTypeImports: true,
         useUnknownInIndexSignature: true,
         useIndexSignature: false,
@@ -26,8 +28,8 @@ const config: CodegenConfig = {
           EmailAddress: "string",
         },
         mappers: {
-          User: "@/models/User#UserDocument",
-          Task: "@/models/Task#TaskDocument",
+          User: "@/models/User#UserResolverParent",
+          Task: "@/models/Task#TaskResolverParent",
         },
       },
     },
@@ -44,6 +46,8 @@ const config: CodegenConfig = {
         fragmentMasking: { unmaskFunctionName: "getFragmentData" },
       },
       config: {
+        enumsAsTypes: true,
+        strictScalars: true,
         scalars: {
           DateTime: "Date",
           EmailAddress: "string",

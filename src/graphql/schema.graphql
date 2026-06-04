@@ -42,7 +42,7 @@ type Task {
   started: Boolean!
   title: String!
   user: User!
-  createdAt: String!
+  createdAt: DateTime!
 }
 
 type TaskConnection {

@@ -17,27 +17,21 @@ import {
   TaskFullFieldsFragmentDoc,
   ToggleTaskCompletedDocument,
   ToggleTaskStartedDocument,
-  type GetTasksQuery,
+  type TaskFullFieldsFragment,
   type ToggleTaskCompletedMutation,
-  type ToggleTaskCompletedMutationVariables,
   type ToggleTaskStartedMutation,
-  type ToggleTaskStartedMutationVariables,
 } from "@/gql/graphql";
-import type { Reference, StoreObject } from "@apollo/client/cache";
+import type { ApolloCache, Reference } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 export default function TaskList() {
-  const { data, loading, error } = useQuery<GetTasksQuery>(GetTasksDocument, {
+  const { data, loading, error } = useQuery(GetTasksDocument, {
     fetchPolicy: "cache-and-network",
   });
-  const [toggleTaskCompleted] = useMutation<ToggleTaskCompletedMutation, ToggleTaskCompletedMutationVariables>(
-    ToggleTaskCompletedDocument,
-  );
-  const [toggleTaskStarted] = useMutation<ToggleTaskStartedMutation, ToggleTaskStartedMutationVariables>(
-    ToggleTaskStartedDocument,
-  );
+  const [toggleTaskCompleted] = useMutation(ToggleTaskCompletedDocument);
+  const [toggleTaskStarted] = useMutation(ToggleTaskStartedDocument);
   const [deleteTask] = useMutation(DeleteTaskDocument);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<{ id: string; title: string } | null>(null);
@@ -45,7 +39,10 @@ export default function TaskList() {
   const rawTasks = (data?.getTasks ?? []) as FragmentType<typeof TaskFullFieldsFragmentDoc>[];
   const tasks = getFragmentData(TaskFullFieldsFragmentDoc, rawTasks);
 
-  const titleOf = useCallback((taskId: string) => tasks.find((t) => t.id === taskId)?.title ?? "Task", [tasks]);
+  const titleOf = useCallback(
+    (taskId: string) => tasks.find((t: TaskFullFieldsFragment) => t.id === taskId)?.title ?? "Task",
+    [tasks],
+  );
 
   const handleToggleCompleted = useCallback(
     (taskId: string, currentCompleted: boolean, currentStarted: boolean) => {
@@ -55,16 +52,17 @@ export default function TaskList() {
       void toggleTaskCompleted({
         variables: { id: taskId },
         optimisticResponse: {
+          __typename: "Mutation",
           toggleTaskCompleted: { __typename: "Task", id: taskId, completed: nextCompleted, started: nextStarted },
-        },
-        update: (cache, { data: mutationData }) => {
+        } as ToggleTaskCompletedMutation,
+        update: (cache: ApolloCache, { data: mutationData }) => {
           const result = mutationData?.toggleTaskCompleted;
           if (!result) return;
           const cacheId = cache.identify({ __typename: "Task", id: taskId });
           if (!cacheId) return;
           cache.modify({ id: cacheId, fields: { completed: () => result.completed, started: () => result.started } });
         },
-        onCompleted: (result) => {
+        onCompleted: (result: ToggleTaskCompletedMutation) => {
           const msg = result.toggleTaskCompleted.completed ? "marked complete" : "marked incomplete";
           toast.success(`Task "${title}" ${msg}`);
         },
@@ -79,15 +77,18 @@ export default function TaskList() {
       const title = titleOf(taskId);
       void toggleTaskStarted({
         variables: { id: taskId },
-        optimisticResponse: { toggleTaskStarted: { __typename: "Task", id: taskId, started: !currentStarted } },
-        update: (cache, { data: mutationData }) => {
+        optimisticResponse: {
+          __typename: "Mutation",
+          toggleTaskStarted: { __typename: "Task", id: taskId, started: !currentStarted },
+        } as ToggleTaskStartedMutation,
+        update: (cache: ApolloCache, { data: mutationData }) => {
           const result = mutationData?.toggleTaskStarted;
           if (!result) return;
           const cacheId = cache.identify({ __typename: "Task", id: taskId });
           if (!cacheId) return;
           cache.modify({ id: cacheId, fields: { started: () => result.started } });
         },
-        onCompleted: (result) => {
+        onCompleted: (result: ToggleTaskStartedMutation) => {
           const msg = result.toggleTaskStarted.started ? "started" : "marked not started";
           toast.success(`Task "${title}" ${msg}`);
         },
@@ -105,10 +106,11 @@ export default function TaskList() {
         update: (cache) => {
           cache.modify({
             fields: {
-              getTasks(existingRefs, { readField }) {
-                return (existingRefs ?? []).filter(
-                  (ref: Reference | StoreObject | undefined) => readField("id", ref) !== taskId,
-                );
+              getTasks(
+                existingRefs: readonly Reference[] | undefined,
+                { readField }: { readField: (fieldName: string, ref: Reference) => unknown },
+              ) {
+                return (existingRefs ?? []).filter((ref) => readField("id", ref) !== taskId);
               },
             },
           });

@@ -8,6 +8,7 @@ import { getApolloClient } from "./apolloClient";
 
 export default function ApolloClientProvider({ children }: Readonly<PropsWithChildren>) {
   const apolloClient = useMemo(() => getApolloClient(), []);
+
   return (
     <SessionProvider>
       <ApolloProvider client={apolloClient}>{children}</ApolloProvider>

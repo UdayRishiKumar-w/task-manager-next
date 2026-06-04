@@ -4,6 +4,7 @@ import { userResolvers } from "@/server/resolvers/user.resolver";
 export const resolvers = {
   Query: {
     ...taskResolvers.Query,
+    ...userResolvers.Query,
   },
   Mutation: {
     ...taskResolvers.Mutation,

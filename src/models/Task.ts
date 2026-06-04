@@ -1,4 +1,4 @@
-import { Schema, model, models, type HydratedDocument, type InferSchemaType, type Model } from "mongoose";
+import { Schema, Types, model, models, type HydratedDocument, type InferSchemaType, type Model } from "mongoose";
 import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 
 const TaskSchema = new Schema(
@@ -48,3 +48,12 @@ TaskSchema.plugin(mongooseLeanVirtuals);
 export type TaskSchemaType = InferSchemaType<typeof TaskSchema>;
 export const Task: Model<TaskSchemaType> = models.Task ?? model<TaskSchemaType>("Task", TaskSchema);
 export type TaskDocument = HydratedDocument<TaskSchemaType>;
+export type TaskResolverParent =
+  | TaskDocument
+  | (Omit<TaskSchemaType, "userId"> & {
+      _id: Types.ObjectId | string;
+      createdAt?: Date;
+      id?: string;
+      updatedAt?: Date;
+      userId: Types.ObjectId | string;
+    });

@@ -39,18 +39,22 @@ export default function TaskForm() {
   });
 
   const onSubmit: SubmitHandler<CreateTaskInput> = async (values) => {
-    const input: Record<string, unknown> = {
+    const input: GQLCreateTaskInput = {
       title: values.title,
       priority: values.priority,
     };
 
+    if (values.description) {
+      input.description = values.description;
+    }
+
     if (values.dueDate) {
-      input.dueDate = new Date(values.dueDate).toISOString();
+      input.dueDate = new Date(values.dueDate);
     }
 
     try {
       await createTask({
-        variables: { input: input as GQLCreateTaskInput },
+        variables: { input },
         refetchQueries: [{ query: GetTasksDocument }],
         awaitRefetchQueries: true,
       });
@@ -160,7 +164,7 @@ export default function TaskForm() {
           type="submit"
           disabled={loading}
           aria-label={loading ? "Adding task..." : "Add task"}
-          className="w-full sm:w-auto"
+          className="w-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {loading ? "Adding..." : "Add"}
         </Button>

@@ -1,10 +1,10 @@
-import type { InputMaybe, Priority } from "@/gql/graphql";
+import type { Priority } from "@/gql/graphql";
 import { RootState } from "@/store";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface TaskFiltersState {
   status: "ALL" | "ACTIVE" | "COMPLETED";
-  priority: InputMaybe<Priority> | "ALL";
+  priority: Priority | "ALL";
 }
 
 const initialState: TaskFiltersState = {

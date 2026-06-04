@@ -2,29 +2,22 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
-    // Override module resolution for Jest/Node environment
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
 
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
 
-    // Ensure types are available in tests
     "types": ["jest", "node", "@testing-library/jest-dom"],
 
-    // Allow importing JSON files in tests
     "resolveJsonModule": true,
 
-    // Emit decorator metadata for testing frameworks that need it
     "emitDecoratorMetadata": false,
     "experimentalDecorators": false,
 
-    // Ensure JSX works in test files
     "jsx": "react-jsx",
 
-    // Disable noEmit since ts-jest needs to transform files
     "noEmit": false,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@tests/*": ["./tests/*"]

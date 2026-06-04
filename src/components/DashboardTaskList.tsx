@@ -6,12 +6,9 @@ import { getFragmentData, type FragmentType } from "@/gql";
 import {
   TaskFullFieldsFragmentDoc,
   TasksPaginatedDocument,
-  type InputMaybe,
   type Priority,
   type TaskFilterInput,
   type TaskFullFieldsFragment,
-  type TasksPaginatedQuery,
-  type TasksPaginatedQueryVariables,
 } from "@/gql/graphql";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectPriorityFilter, selectStatusFilter, setPriorityFilter, setStatusFilter } from "@/store/taskFiltersSlice";
@@ -24,14 +21,14 @@ export default function DashboardTaskList() {
   const priorityFilter = useAppSelector(selectPriorityFilter);
 
   const filter = useMemo(() => {
-    const f: InputMaybe<TaskFilterInput> = {};
+    const f: TaskFilterInput = {};
     if (statusFilter === "COMPLETED") f.completed = true;
     if (statusFilter === "ACTIVE") f.completed = false;
     if (priorityFilter && priorityFilter !== "ALL") f.priority = priorityFilter;
     return Object.keys(f).length ? f : undefined;
   }, [statusFilter, priorityFilter]);
 
-  const { data, loading, error } = useQuery<TasksPaginatedQuery, TasksPaginatedQueryVariables>(TasksPaginatedDocument, {
+  const { data, loading, error } = useQuery(TasksPaginatedDocument, {
     variables: { limit: 50, offset: 0, filter: filter ?? undefined },
     fetchPolicy: "cache-and-network",
   });
